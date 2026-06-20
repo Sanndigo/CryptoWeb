@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+cryptography
+bcrypt
+PyJWT
+pydantic

@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      # Пробрасываем только на localhost (127.0.0.1), 
+      # чтобы Nginx Proxy Manager мог проксировать запросы, 
+      # но они не были доступны извне напрямую.
+      # Используем нестандартный порт 25800
+      - "127.0.0.1:25800:8000"
+    environment:
+      - ENV=production
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      # Пробрасываем только на localhost (127.0.0.1) на нестандартный порт 25432
+      - "127.0.0.1:25432:4321"
+    environment:
+      # Обратите внимание, что фронтенду (в браузере клиента) 
+      # нужен будет публичный URL бэкенда для выполнения запросов.
+      # Замените этот URL на ваш боевой домен API, который вы настроите в NPM.
+      - PUBLIC_API_URL=https://api.yourdomain.com
+    depends_on:
+      - backend
+    restart: always
