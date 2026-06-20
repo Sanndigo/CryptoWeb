@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neon-green: #00ff41;
+  --color-black-bg: #0a0a0a;
+  --color-dark-gray: #1a1a1a;
+  --color-light-gray: #cccccc;
+  --color-pure-white: #ffffff;
+
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* Base styles for brutalist/tech theme */
+@layer base {
+  body {
+    @apply bg-black-bg text-pure-white font-sans antialiased;
+  }
+  
+  ::selection {
+    @apply bg-neon-green text-black-bg;
+  }
+
+  /* Custom scrollbar for tech feel */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-black-bg border-l border-dark-gray;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-neon-green;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .tech-border {
+    @apply border border-neon-green/30 hover:border-neon-green transition-colors duration-200;
+  }
+  
+  .tech-panel {
+    @apply bg-dark-gray border border-neon-green/30 hover:border-neon-green transition-colors duration-200 p-4;
+  }
+
+  .tech-input {
+    @apply w-full bg-black-bg text-pure-white border border-dark-gray focus:border-neon-green focus:outline-none p-3 font-mono transition-colors duration-200;
+  }
+  
+  .tech-label {
+    @apply text-neon-green text-xs uppercase tracking-wider font-bold mb-2 block;
+  }
+}

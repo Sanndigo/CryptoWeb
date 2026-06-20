@@ -1,0 +1,167 @@
+---
+// CryptoPanel.astro
+---
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <!-- Input Section (Left) -->
+  <div class="lg:col-span-5 space-y-4">
+    <div class="tech-panel flex flex-col h-full">
+      <label for="sourceText" class="tech-label">Source Data</label>
+      <textarea 
+        id="sourceText" 
+        class="tech-input flex-grow min-h-[200px] resize-y" 
+        placeholder="Enter text to encode, decode, hash or encrypt..."></textarea>
+      
+      <div class="mt-4">
+        <label for="secretKey" class="tech-label">Secret Key (for AES/DES/XOR)</label>
+        <input 
+          type="text" 
+          id="secretKey" 
+          class="tech-input h-10" 
+          placeholder="Optional key..." />
+      </div>
+
+      <div class="mt-4 text-xs text-light-gray font-mono">
+        Status: <span id="apiStatus" class="text-neon-green">READY</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Output Section (Right) -->
+  <div class="lg:col-span-7 tech-panel overflow-y-auto max-h-[80vh] custom-scroll">
+    <div class="space-y-8" id="resultsContainer">
+      <!-- We will inject result groups here via JS -->
+      <div class="text-center text-light-gray font-mono py-10 opacity-50">
+        AWAITING INPUT...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const sourceText = document.getElementById('sourceText') as HTMLTextAreaElement;
+  const secretKey = document.getElementById('secretKey') as HTMLInputElement;
+  const resultsContainer = document.getElementById('resultsContainer') as HTMLDivElement;
+  const apiStatus = document.getElementById('apiStatus') as HTMLSpanElement;
+
+  // Use PUBLIC_API_URL if defined (via Vite/Astro env), else fallback to localhost:8000
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+
+  let debounceTimer: ReturnType<typeof setTimeout>;
+
+  async function processData() {
+    const text = sourceText.value;
+    const key = secretKey.value;
+
+    if (!text.trim()) {
+      resultsContainer.innerHTML = '<div class="text-center text-light-gray font-mono py-10 opacity-50">AWAITING INPUT...</div>';
+      apiStatus.textContent = 'READY';
+      apiStatus.className = 'text-neon-green';
+      return;
+    }
+
+    apiStatus.textContent = 'PROCESSING...';
+    apiStatus.className = 'text-yellow-400';
+
+    try {
+      const response = await fetch(`${API_URL}/process`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text, key })
+      });
+
+      if (!response.ok) throw new Error('API Error');
+
+      const data = await response.json();
+      renderResults(data);
+      apiStatus.textContent = 'SUCCESS';
+      apiStatus.className = 'text-neon-green';
+    } catch (error) {
+      console.error(error);
+      apiStatus.textContent = 'ERROR';
+      apiStatus.className = 'text-red-500';
+      resultsContainer.innerHTML = '<div class="text-red-500 font-mono py-4">Failed to communicate with backend.</div>';
+    }
+  }
+
+  function renderResults(data: any) {
+    if (Object.keys(data).length === 0) return;
+    
+    let html = '';
+    
+    for (const [category, items] of Object.entries(data)) {
+      html += `<div class="mb-6">
+        <h3 class="text-neon-green text-sm tracking-widest uppercase mb-3 border-b border-dark-gray pb-1">${category}</h3>
+        <div class="space-y-3">`;
+        
+      for (const [method, result] of Object.entries(items as Record<string, string>)) {
+        html += `
+          <div class="bg-black-bg border border-dark-gray p-3 hover:border-neon-green/50 transition-colors">
+            <div class="flex justify-between items-center mb-1">
+              <span class="text-xs font-bold text-pure-white">${method}</span>
+              <button class="copy-btn text-xs text-light-gray hover:text-neon-green transition-colors" data-clipboard="${escapeHtml(result)}">COPY</button>
+            </div>
+            <div class="font-mono text-sm text-light-gray break-all max-h-32 overflow-y-auto pr-2 custom-scroll whitespace-pre-wrap">${escapeHtml(result)}</div>
+          </div>
+        `;
+      }
+      
+      html += `</div></div>`;
+    }
+
+    resultsContainer.innerHTML = html;
+
+    // Attach copy event listeners
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.target as HTMLButtonElement;
+        const text = target.getAttribute('data-clipboard');
+        if (text) {
+          navigator.clipboard.writeText(text);
+          const originalText = target.innerText;
+          target.innerText = 'COPIED!';
+          target.classList.add('text-neon-green');
+          setTimeout(() => {
+            target.innerText = originalText;
+            target.classList.remove('text-neon-green');
+          }, 2000);
+        }
+      });
+    });
+  }
+
+  function escapeHtml(unsafe: string) {
+    return (unsafe || "").toString()
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+  }
+
+  // Event Listeners with Debounce
+  const onInput = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(processData, 300);
+  };
+
+  sourceText.addEventListener('input', onInput);
+  secretKey.addEventListener('input', onInput);
+
+</script>
+
+<style>
+  .custom-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scroll::-webkit-scrollbar-track {
+    background: var(--color-black-bg);
+  }
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-dark-gray);
+  }
+  .custom-scroll:hover::-webkit-scrollbar-thumb {
+    background: var(--color-neon-green);
+  }
+</style>
