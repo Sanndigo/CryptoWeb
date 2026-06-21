@@ -1,107 +1,130 @@
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.backends import default_backend
+import codecs
 import base64
 import hashlib
+import os
+
+# AES-GCM (authenticated encryption) — replaces AES-CBC
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+# TripleDES moved to decrepit in cryptography ≥42; fall back for older versions
+try:
+    from cryptography.hazmat.decrepit.ciphers.algorithms import TripleDES
+except ImportError:
+    from cryptography.hazmat.primitives.ciphers.algorithms import TripleDES  # type: ignore
+
+from cryptography.hazmat.primitives.ciphers import Cipher, modes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.backends import default_backend
+
 
 def _get_aes_key(key: str) -> bytes:
-    # Ensure key is 32 bytes for AES-256
+    """Derive a 32-byte AES-256 key via SHA-256."""
     return hashlib.sha256(key.encode('utf-8')).digest()
 
-def _get_des_key(key: str) -> bytes:
-    # Ensure key is 8 bytes for DES
-    return hashlib.md5(key.encode('utf-8')).digest()[:8]
+
+def _get_3des_key(key: str) -> bytes:
+    """Derive a 24-byte 3DES key via SHA-256 (first 24 bytes)."""
+    return hashlib.sha256(key.encode('utf-8')).digest()[:24]
+
+
+# ── AES-256-GCM ──────────────────────────────────────────────────────────────
 
 def encrypt_aes(text: str, key: str) -> str:
     if not key:
         return "Key is required for AES"
     try:
         key_bytes = _get_aes_key(key)
-        # Using ECB for simplicity in this tool, though CBC is more secure (requires IV).
-        # We will use ECB since it's easier for stateless one-off text encryption without passing IV around,
-        # but in real life CBC/GCM should be used.
-        cipher = Cipher(algorithms.AES(key_bytes), modes.ECB(), backend=default_backend())
-        encryptor = cipher.encryptor()
-        
-        padder = padding.PKCS7(128).padder()
-        padded_data = padder.update(text.encode('utf-8')) + padder.finalize()
-        
-        ct = encryptor.update(padded_data) + encryptor.finalize()
-        return base64.b64encode(ct).decode('utf-8')
-    except Exception as e:
-        return f"Encryption error: {str(e)}"
+        nonce = os.urandom(12)           # 96-bit nonce recommended for GCM
+        aesgcm = AESGCM(key_bytes)
+        # encrypt() appends the 16-byte authentication tag to the ciphertext
+        ct = aesgcm.encrypt(nonce, text.encode('utf-8'), None)
+        return base64.b64encode(nonce + ct).decode('utf-8')
+    except Exception:
+        return "Encryption error"
+
 
 def decrypt_aes(text: str, key: str) -> str:
     if not key:
         return "Key is required for AES"
     try:
         key_bytes = _get_aes_key(key)
-        cipher = Cipher(algorithms.AES(key_bytes), modes.ECB(), backend=default_backend())
-        decryptor = cipher.decryptor()
-        
-        ct = base64.b64decode(text.encode('utf-8'))
-        padded_data = decryptor.update(ct) + decryptor.finalize()
-        
-        unpadder = padding.PKCS7(128).unpadder()
-        data = unpadder.update(padded_data) + unpadder.finalize()
-        return data.decode('utf-8')
-    except Exception as e:
+        raw_data = base64.b64decode(text.encode('utf-8'))
+        if len(raw_data) < 28:          # 12 nonce + 16 tag minimum
+            return "Decryption error: Invalid ciphertext"
+        nonce = raw_data[:12]
+        ct = raw_data[12:]
+        aesgcm = AESGCM(key_bytes)
+        plaintext = aesgcm.decrypt(nonce, ct, None)
+        return plaintext.decode('utf-8')
+    except Exception:
         return "Decryption error or invalid key"
 
-def encrypt_des(text: str, key: str) -> str:
+
+# ── 3DES-CBC ─────────────────────────────────────────────────────────────────
+
+def encrypt_3des(text: str, key: str) -> str:
     if not key:
-        return "Key is required for DES"
+        return "Key is required for 3DES"
     try:
-        key_bytes = _get_des_key(key)
-        cipher = Cipher(algorithms.TripleDES(key_bytes), modes.ECB(), backend=default_backend())
+        key_bytes = _get_3des_key(key)
+        iv = os.urandom(8)
+        cipher = Cipher(TripleDES(key_bytes), modes.CBC(iv), backend=default_backend())
         encryptor = cipher.encryptor()
-        
         padder = padding.PKCS7(64).padder()
         padded_data = padder.update(text.encode('utf-8')) + padder.finalize()
-        
         ct = encryptor.update(padded_data) + encryptor.finalize()
-        return base64.b64encode(ct).decode('utf-8')
-    except Exception as e:
-        return f"Encryption error: {str(e)}"
+        return base64.b64encode(iv + ct).decode('utf-8')
+    except Exception:
+        return "Encryption error"
 
-def decrypt_des(text: str, key: str) -> str:
+
+def decrypt_3des(text: str, key: str) -> str:
     if not key:
-        return "Key is required for DES"
+        return "Key is required for 3DES"
     try:
-        key_bytes = _get_des_key(key)
-        cipher = Cipher(algorithms.TripleDES(key_bytes), modes.ECB(), backend=default_backend())
+        key_bytes = _get_3des_key(key)
+        raw_data = base64.b64decode(text.encode('utf-8'))
+        if len(raw_data) < 8:
+            return "Decryption error: Invalid ciphertext"
+        iv = raw_data[:8]
+        ct = raw_data[8:]
+        cipher = Cipher(TripleDES(key_bytes), modes.CBC(iv), backend=default_backend())
         decryptor = cipher.decryptor()
-        
-        ct = base64.b64decode(text.encode('utf-8'))
         padded_data = decryptor.update(ct) + decryptor.finalize()
-        
         unpadder = padding.PKCS7(64).unpadder()
         data = unpadder.update(padded_data) + unpadder.finalize()
         return data.decode('utf-8')
-    except Exception as e:
+    except Exception:
         return "Decryption error or invalid key"
 
+
+# ── ROT-13 ───────────────────────────────────────────────────────────────────
+
 def rot13(text: str) -> str:
-    import codecs
     return codecs.encode(text, 'rot_13')
+
+
+# ── XOR ──────────────────────────────────────────────────────────────────────
 
 def xor_cipher(text: str, key: str) -> str:
     if not key:
         return "Key is required for XOR"
-    # Simple repeating-key XOR
-    res = []
-    for i in range(len(text)):
-        res.append(chr(ord(text[i]) ^ ord(key[i % len(key)])))
-    return base64.b64encode(''.join(res).encode('utf-8')).decode('utf-8')
+    try:
+        text_bytes = text.encode('utf-8')
+        key_bytes  = key.encode('utf-8')
+        res = bytearray(text_bytes[i] ^ key_bytes[i % len(key_bytes)] for i in range(len(text_bytes)))
+        return base64.b64encode(res).decode('utf-8')
+    except Exception:
+        return "Encryption error"
+
 
 def xor_decipher(text: str, key: str) -> str:
     if not key:
         return "Key is required for XOR"
     try:
-        raw_text = base64.b64decode(text.encode('utf-8')).decode('utf-8')
-        res = []
-        for i in range(len(raw_text)):
-            res.append(chr(ord(raw_text[i]) ^ ord(key[i % len(key)])))
-        return ''.join(res)
+        raw_bytes = base64.b64decode(text.encode('utf-8'))
+        key_bytes  = key.encode('utf-8')
+        res = bytearray(raw_bytes[i] ^ key_bytes[i % len(key_bytes)] for i in range(len(raw_bytes)))
+        return res.decode('utf-8')
     except Exception:
         return "Error deciphering XOR"

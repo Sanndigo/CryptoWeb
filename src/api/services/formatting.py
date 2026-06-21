@@ -21,5 +21,5 @@ def decode_jwt(text: str) -> str:
         header = jwt.get_unverified_header(text)
         payload = jwt.decode(text, options={"verify_signature": False})
         return json.dumps({"header": header, "payload": payload}, indent=4)
-    except Exception as e:
-        return f"Invalid JWT: {str(e)}"
+    except Exception:
+        return "Invalid JWT"
