@@ -1,40 +1,22 @@
 # CryptoWeb
 
-Универсальный онлайн шифратор/дешифратор, кодировщик и форматер, написанный на Astro JS (Frontend) и FastAPI (Backend).
+Универсальный онлайн шифратор/дешифратор, кодировщик и форматер. Упакован в единый контейнер: Astro (Frontend) раздается через FastAPI (Backend).
 
 ## Структура проекта
-- `frontend/` - UI на Astro JS + Tailwind CSS (v4)
-- `backend/` - API на Python (FastAPI)
-- `docker-compose.yaml` - Файл оркестрации для развертывания
-
-## Запуск для разработки (Локально)
-
-**Backend:**
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # Для Linux/Mac
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+- `src/` - Исходники Astro JS + Tailwind CSS (v4)
+- `src/api/` - Исходники API на Python (FastAPI)
+- `Dockerfile` - Multi-stage сборка (собирает Astro и запускает вместе с FastAPI)
+- `docker-compose.yml` - Файл оркестрации для развертывания
 
 ## Развертывание через Docker (Portainer / VPS)
 
-Проект полностью готов к запуску в Docker.
+Проект полностью готов к запуску в Docker в один контейнер.
 
-1. Склонируйте репозиторий на ваш сервер.
-2. Убедитесь, что у вас установлен Docker и Docker Compose (или загрузите проект в Portainer как Stack).
-3. Запустите проект командой:
+1. Убедитесь, что у вас установлен Docker и Docker Compose (или загрузите проект в Portainer как Stack).
+2. Запустите проект командой:
 ```bash
 docker compose up -d --build
 ```
-4. Приложение будет доступно по порту `4321` (http://your-server-ip:4321), а API по порту `8000`.
+3. Приложение (и UI, и API) будет доступно локально по порту `25800` (http://127.0.0.1:25800).
 
-*Для использования nginx в качестве reverse proxy, проксируйте домен на порт 4321 для фронтенда и на 8000 для `/process` API.*
+*Для использования Nginx Proxy Manager направьте доменное имя на порт 25800 (IP 127.0.0.1).*

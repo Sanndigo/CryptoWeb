@@ -43,9 +43,6 @@
   const resultsContainer = document.getElementById('resultsContainer') as HTMLDivElement;
   const apiStatus = document.getElementById('apiStatus') as HTMLSpanElement;
 
-  // Use PUBLIC_API_URL if defined (via Vite/Astro env), else fallback to localhost:8000
-  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
-
   let debounceTimer: ReturnType<typeof setTimeout>;
 
   async function processData() {
@@ -63,7 +60,7 @@
     apiStatus.className = 'text-yellow-400';
 
     try {
-      const response = await fetch(`${API_URL}/process`, {
+      const response = await fetch(`/api/process`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

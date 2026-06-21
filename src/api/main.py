@@ -1,7 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from models import TextInput, CryptoResponse
-from services import hashing, encoding, encryption, formatting
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
+# Relative imports since they are all in src/api
+from .models import TextInput, CryptoResponse
+from .services import hashing, encoding, encryption, formatting
 
 app = FastAPI(title="CryptoWeb API")
 
@@ -13,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/process")
+@app.post("/api/process")
 def process_all(payload: TextInput):
     text = payload.text
     key = payload.key or ""
@@ -21,7 +26,6 @@ def process_all(payload: TextInput):
     if not text:
         return {}
 
-    # Gather all results in one massive dictionary (like dencode)
     return {
         "hashing": {
             "MD5": hashing.hash_md5(text),
@@ -56,4 +60,17 @@ def process_all(payload: TextInput):
             "JWT Decoder": formatting.decode_jwt(text)
         }
     }
+
+# Mount Astro static files
+# We ensure this is after API routes to prevent catching /api calls
+DIST_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "dist")
+
+if os.path.isdir(DIST_DIR):
+    # Mount everything else statically
+    app.mount("/", StaticFiles(directory=DIST_DIR, html=True), name="static")
+else:
+    @app.get("/")
+    def read_root():
+        return {"status": "ok", "message": "API is running. Build Astro to see UI."}
+
 
