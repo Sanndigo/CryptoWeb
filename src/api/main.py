@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -23,6 +23,12 @@ def process_all(payload: TextInput):
     text = payload.text
     key = payload.key or ""
 
+    if len(text) > 1000:
+        raise HTTPException(status_code=400, detail="Payload exceeds the maximum allowed length of 1000 characters.")
+    
+    if len(key) > 256:
+        raise HTTPException(status_code=400, detail="Secret key exceeds the maximum allowed length of 256 characters.")
+
     if not text:
         return {}
 
@@ -34,29 +40,20 @@ def process_all(payload: TextInput):
             "bcrypt": hashing.hash_bcrypt(text)
         },
         "encoding": {
-            "Base64": encoding.encode_base64(text),
-            "Base64 Decode": encoding.decode_base64(text),
-            "URL Encode": encoding.encode_url(text),
-            "URL Decode": encoding.decode_url(text),
-            "Hex": encoding.encode_hex(text),
-            "Hex Decode": encoding.decode_hex(text),
-            "Binary": encoding.encode_binary(text),
-            "Binary Decode": encoding.decode_binary(text),
-            "Morse": encoding.encode_morse(text),
-            "Morse Decode": encoding.decode_morse(text)
+            "Base64": {"Encode": encoding.encode_base64(text), "Decode": encoding.decode_base64(text)},
+            "URL": {"Encode": encoding.encode_url(text), "Decode": encoding.decode_url(text)},
+            "Hex": {"Encode": encoding.encode_hex(text), "Decode": encoding.decode_hex(text)},
+            "Binary": {"Encode": encoding.encode_binary(text), "Decode": encoding.decode_binary(text)},
+            "Morse": {"Encode": encoding.encode_morse(text), "Decode": encoding.decode_morse(text)}
         },
         "encryption": {
-            "AES-256 Encrypt": encryption.encrypt_aes(text, key),
-            "AES-256 Decrypt": encryption.decrypt_aes(text, key),
-            "DES Encrypt": encryption.encrypt_des(text, key),
-            "DES Decrypt": encryption.decrypt_des(text, key),
+            "AES-256": {"Encrypt": encryption.encrypt_aes(text, key), "Decrypt": encryption.decrypt_aes(text, key)},
+            "DES": {"Encrypt": encryption.encrypt_des(text, key), "Decrypt": encryption.decrypt_des(text, key)},
             "ROT13": encryption.rot13(text),
-            "XOR Encrypt": encryption.xor_cipher(text, key),
-            "XOR Decrypt": encryption.xor_decipher(text, key)
+            "XOR": {"Encrypt": encryption.xor_cipher(text, key), "Decrypt": encryption.xor_decipher(text, key)}
         },
         "formatting": {
-            "JSON Beautifier": formatting.format_json_beautify(text),
-            "JSON Minifier": formatting.format_json_minify(text),
+            "JSON": {"Beautify": formatting.format_json_beautify(text), "Minify": formatting.format_json_minify(text)},
             "JWT Decoder": formatting.decode_jwt(text)
         }
     }
