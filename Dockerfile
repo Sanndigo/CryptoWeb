@@ -26,4 +26,4 @@ COPY src/api ./src/api
 COPY --from=build /app/dist ./dist
 
 # Run uvicorn pointing to src.api.main:app
-CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8100"]

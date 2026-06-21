@@ -2,8 +2,8 @@ services:
   cryptoweb:
     build: .
     ports:
-      # Пробрасываем только на localhost (127.0.0.1) на нестандартный порт 25800
-      - "127.0.0.1:25800:8000"
+      # Пробрасываем только на localhost (127.0.0.1) на нестандартный порт 8100
+      - "127.0.0.1:8100:8100"
     environment:
       - ENV=production
     restart: always
