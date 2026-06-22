@@ -2,112 +2,248 @@
 // CryptoPanel.astro
 ---
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start font-sans">
-  <!-- Sidebar Menu (Left) -->
+
+  <!-- ══ Sidebar Menu ══════════════════════════════════════════════════════ -->
   <div class="lg:col-span-3 tech-panel flex flex-col space-y-1 sticky top-24 max-h-[80vh] overflow-y-auto custom-scroll">
     <h3 class="text-xs text-pure-white font-bold tracking-widest uppercase mb-2 border-b border-dark-gray pb-2">Categories</h3>
-    
+
     <button class="category-btn text-left text-sm px-3 py-2 border border-transparent transition-colors active text-neon-green border-neon-green bg-dark-gray/20" data-category="all">
       [ All Modes ]
     </button>
-    
+
+    <!-- Hashing -->
     <div class="menu-group">
       <button class="category-btn flex justify-between items-center w-full text-left text-sm px-3 py-2 text-light-gray hover:text-neon-green border border-transparent transition-colors" data-category="hashing">
-        <span>> Hashing</span>
-        <span class="text-xs chevron font-mono">+</span>
+        <span>> Hashing</span><span class="text-xs chevron font-mono">+</span>
       </button>
-      <div class="accordion-wrapper">
-        <div class="accordion-inner">
-          <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="MD5">MD5</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="SHA-256">SHA-256</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="SHA-512">SHA-512</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="bcrypt">bcrypt</button>
-          </div>
+      <div class="accordion-wrapper"><div class="accordion-inner">
+        <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="MD5">MD5</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="SHA-256">SHA-256</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="SHA-512">SHA-512</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="bcrypt">bcrypt</button>
         </div>
-      </div>
+      </div></div>
     </div>
 
+    <!-- Encoding -->
     <div class="menu-group">
       <button class="category-btn flex justify-between items-center w-full text-left text-sm px-3 py-2 text-light-gray hover:text-neon-green border border-transparent transition-colors" data-category="encoding">
-        <span>> Encoding</span>
-        <span class="text-xs chevron font-mono">+</span>
+        <span>> Encoding</span><span class="text-xs chevron font-mono">+</span>
       </button>
-      <div class="accordion-wrapper">
-        <div class="accordion-inner">
-          <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Base64">Base64</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="URL">URL</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Hex">Hex</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Binary">Binary</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Morse">Morse</button>
-          </div>
+      <div class="accordion-wrapper"><div class="accordion-inner">
+        <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Base64">Base64</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="URL">URL</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Hex">Hex</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Binary">Binary</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="Morse">Morse</button>
         </div>
-      </div>
+      </div></div>
     </div>
 
+    <!-- Encryption -->
     <div class="menu-group">
       <button class="category-btn flex justify-between items-center w-full text-left text-sm px-3 py-2 text-light-gray hover:text-neon-green border border-transparent transition-colors" data-category="encryption">
-        <span>> Encryption</span>
-        <span class="text-xs chevron font-mono">+</span>
+        <span>> Encryption</span><span class="text-xs chevron font-mono">+</span>
       </button>
-      <div class="accordion-wrapper">
-        <div class="accordion-inner">
-          <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="AES-256">AES-256</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="3DES">3DES</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="ROT13">ROT13</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="XOR">XOR</button>
-          </div>
+      <div class="accordion-wrapper"><div class="accordion-inner">
+        <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="AES-256">AES-256</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="3DES">3DES</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="ROT13">ROT13</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="XOR">XOR</button>
         </div>
-      </div>
+      </div></div>
     </div>
 
+    <!-- Formatting -->
     <div class="menu-group">
       <button class="category-btn flex justify-between items-center w-full text-left text-sm px-3 py-2 text-light-gray hover:text-neon-green border border-transparent transition-colors" data-category="formatting">
-        <span>> Formatting</span>
-        <span class="text-xs chevron font-mono">+</span>
+        <span>> Formatting</span><span class="text-xs chevron font-mono">+</span>
       </button>
-      <div class="accordion-wrapper">
-        <div class="accordion-inner">
-          <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="JSON">JSON</button>
-            <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="JWT Decoder">JWT Decoder</button>
-          </div>
+      <div class="accordion-wrapper"><div class="accordion-inner">
+        <div class="method-list flex-col pl-4 border-l border-dark-gray ml-3 mt-1 mb-2 space-y-1 bg-[#050505] py-2 pr-2">
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="JSON">JSON</button>
+          <button class="method-btn w-full text-left text-xs text-light-gray hover:text-pure-white transition-colors py-1 px-2" data-method="JWT Decoder">JWT Decoder</button>
         </div>
-      </div>
+      </div></div>
     </div>
   </div>
 
-  <!-- Main Content (Middle + Right) -->
+  <!-- ══ Main Content ═══════════════════════════════════════════════════════ -->
   <div class="lg:col-span-9 flex flex-col gap-6">
-    <!-- Input Section -->
+
+    <!-- ── Input Panel ───────────────────────────────────────────────────── -->
     <div class="tech-panel flex flex-col">
+      <!-- Payload -->
       <div class="flex justify-between items-end mb-2">
         <label for="sourceText" class="tech-label !mb-0">Payload Data</label>
         <span id="charCount" class="text-[10px] font-mono text-light-gray tracking-widest">0 / 1000</span>
       </div>
-      <textarea 
-        id="sourceText" 
-        class="tech-input w-full min-h-[160px] resize-y" 
-        placeholder="Enter payload..."
-        maxlength="1000"></textarea>
-      
-      <div class="mt-4">
-        <label for="secretKey" class="tech-label">Secret Key (for AES/3DES/XOR)</label>
-        <input 
-          type="text" 
-          id="secretKey" 
-          class="tech-input h-10 w-full md:w-1/2" 
-          placeholder="Optional symmetric key..." 
-          maxlength="256" />
+      <textarea id="sourceText" class="tech-input w-full min-h-[140px] resize-y" placeholder="Enter payload..." maxlength="1000"></textarea>
+
+      <!-- Key row -->
+      <div class="mt-4 flex gap-3 items-end">
+        <div class="flex-1">
+          <label for="secretKey" class="tech-label">Secret Key <span class="text-light-gray font-normal normal-case tracking-normal">(for AES / 3DES / XOR)</span></label>
+          <input type="text" id="secretKey" class="tech-input h-10 w-full font-mono" placeholder="Optional symmetric key..." maxlength="256" />
+        </div>
       </div>
 
-      <div class="mt-4 pt-4 border-t border-dark-gray text-xs text-light-gray font-mono flex items-center justify-between">
-        <span>Status: <span id="apiStatus" class="text-neon-green font-bold">READY</span></span>
+      <!-- Advanced toggle row -->
+      <div class="mt-4 pt-3 border-t border-dark-gray flex items-center justify-between">
+        <button id="advancedToggle" class="flex items-center gap-2 group">
+          <span class="text-xs font-bold tracking-widest uppercase text-light-gray group-hover:text-neon-green transition-colors">Advanced Settings</span>
+          <span id="advChevron" class="text-xs font-mono text-neon-green w-4">+</span>
+        </button>
+        <span class="text-xs font-mono text-light-gray">Status: <span id="apiStatus" class="text-neon-green font-bold">READY</span></span>
+      </div>
+
+      <!-- Advanced Settings (accordion) -->
+      <div id="advancedWrapper" class="accordion-wrapper">
+        <div class="accordion-inner">
+          <div class="mt-3 border border-neon-green/20 bg-black-bg/60 p-4 space-y-5">
+
+            <!-- AES Settings -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-[10px] font-bold tracking-widest uppercase text-neon-green">AES-256-GCM</span>
+                <div class="flex-1 h-px bg-neon-green/20"></div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Key Size -->
+                <div>
+                  <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">Key Size</span>
+                  <div class="flex gap-1">
+                    <button class="adv-keybits text-[10px] px-2 py-1 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono" data-bits="128">128-bit</button>
+                    <button class="adv-keybits text-[10px] px-2 py-1 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono" data-bits="192">192-bit</button>
+                    <button class="adv-keybits text-[10px] px-2 py-1 border border-neon-green text-neon-green transition-colors font-mono active-adv" data-bits="256">256-bit</button>
+                  </div>
+                </div>
+                <!-- AES Output Format -->
+                <div>
+                  <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">Output Format</span>
+                  <div class="flex gap-1">
+                    <button class="adv-aes-fmt text-[10px] px-2 py-1 border border-neon-green text-neon-green font-mono active-adv" data-fmt="base64">Base64</button>
+                    <button class="adv-aes-fmt text-[10px] px-2 py-1 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono" data-fmt="hex">Hex</button>
+                  </div>
+                </div>
+                <!-- AAD -->
+                <div>
+                  <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">AAD <span class="normal-case">(Auth. Data)</span></span>
+                  <input id="aesAad" type="text" class="tech-input h-8 w-full text-xs" placeholder="Optional additional auth data..." maxlength="256" />
+                </div>
+              </div>
+            </div>
+
+            <!-- 3DES Settings -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-[10px] font-bold tracking-widest uppercase text-neon-green">3DES-CBC</span>
+                <div class="flex-1 h-px bg-neon-green/20"></div>
+              </div>
+              <div>
+                <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">Output Format</span>
+                <div class="flex gap-1">
+                  <button class="adv-des-fmt text-[10px] px-2 py-1 border border-neon-green text-neon-green font-mono active-adv" data-fmt="base64">Base64</button>
+                  <button class="adv-des-fmt text-[10px] px-2 py-1 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono" data-fmt="hex">Hex</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- XOR Settings -->
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-[10px] font-bold tracking-widest uppercase text-neon-green">XOR</span>
+                <div class="flex-1 h-px bg-neon-green/20"></div>
+              </div>
+              <div>
+                <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">Output Format</span>
+                <div class="flex gap-1">
+                  <button class="adv-xor-fmt text-[10px] px-2 py-1 border border-neon-green text-neon-green font-mono active-adv" data-fmt="base64">Base64</button>
+                  <button class="adv-xor-fmt text-[10px] px-2 py-1 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono" data-fmt="hex">Hex</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Output Section -->
+    <!-- ── Key Generator Panel ────────────────────────────────────────────── -->
+    <div class="tech-panel">
+      <div class="flex items-center gap-3 mb-4">
+        <h3 class="text-xs font-bold tracking-widest uppercase text-pure-white">⚡ Key Generator</h3>
+        <div class="flex-1 h-px bg-dark-gray"></div>
+        <span class="text-[10px] font-mono text-light-gray">Generate cryptographically secure keys</span>
+      </div>
+
+      <!-- Algorithm selector -->
+      <div class="flex flex-wrap gap-1 mb-4">
+        <button class="keygen-algo text-[10px] font-bold px-3 py-1.5 border border-neon-green text-neon-green font-mono tracking-wider" data-algo="aes-256">AES-256</button>
+        <button class="keygen-algo text-[10px] font-bold px-3 py-1.5 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono tracking-wider" data-algo="aes-192">AES-192</button>
+        <button class="keygen-algo text-[10px] font-bold px-3 py-1.5 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono tracking-wider" data-algo="aes-128">AES-128</button>
+        <button class="keygen-algo text-[10px] font-bold px-3 py-1.5 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono tracking-wider" data-algo="3des">3DES</button>
+        <button class="keygen-algo text-[10px] font-bold px-3 py-1.5 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono tracking-wider" data-algo="xor">XOR / Random</button>
+        <button class="keygen-algo text-[10px] font-bold px-3 py-1.5 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono tracking-wider" data-algo="password">Password</button>
+      </div>
+
+      <!-- Options row -->
+      <div class="flex flex-wrap gap-4 items-end mb-4">
+        <!-- Format (hidden for password) -->
+        <div id="keygenFmtSection">
+          <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">Format</span>
+          <div class="flex gap-1">
+            <button class="keygen-fmt text-[10px] px-2 py-1 border border-neon-green text-neon-green font-mono tracking-wider" data-fmt="base64">Base64</button>
+            <button class="keygen-fmt text-[10px] px-2 py-1 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-colors font-mono tracking-wider" data-fmt="hex">Hex</button>
+          </div>
+        </div>
+
+        <!-- Length (shown for xor and password) -->
+        <div id="keygenLenSection" class="hidden">
+          <label for="keygenLen" class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">
+            <span id="keygenLenLabel">Length (bytes)</span>
+          </label>
+          <input type="number" id="keygenLen" min="8" max="512" value="32"
+                 class="tech-input h-8 w-24 text-xs text-center font-mono" />
+        </div>
+
+        <!-- Symbols toggle (shown for password) -->
+        <div id="keygenSymSection" class="hidden">
+          <span class="text-[10px] text-light-gray tracking-widest uppercase block mb-1">Symbols</span>
+          <button id="keygenSymToggle"
+                  class="text-[10px] px-3 py-1 border border-dark-gray text-light-gray font-mono tracking-wider transition-colors hover:border-neon-green hover:text-neon-green">
+            OFF
+          </button>
+        </div>
+
+        <!-- Generate button -->
+        <button id="generateKeyBtn"
+                class="ml-auto text-xs font-bold px-5 py-2 border border-neon-green text-neon-green hover:bg-neon-green/10 transition-all active:scale-95 tracking-widest">
+          GENERATE
+        </button>
+      </div>
+
+      <!-- Result row -->
+      <div class="flex gap-2 items-center">
+        <input id="generatedKeyOut" type="text" readonly
+               class="tech-input flex-1 h-10 font-mono text-xs text-neon-green"
+               placeholder="Generated key will appear here..." />
+        <div id="keygenMeta" class="hidden text-[10px] font-mono text-light-gray whitespace-nowrap px-2"></div>
+        <button id="copyKeyBtn"
+                class="shrink-0 text-xs font-bold px-3 py-2 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 transition-all active:scale-95">
+          COPY
+        </button>
+        <button id="useKeyBtn"
+                class="shrink-0 text-xs font-bold px-3 py-2 border border-neon-green/60 text-neon-green/80 hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 transition-all active:scale-95">
+          USE AS KEY
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Output Panel ───────────────────────────────────────────────────── -->
     <div class="tech-panel min-h-[400px]">
       <div class="space-y-6" id="resultsContainer">
         <div class="text-center text-light-gray font-mono py-10 opacity-50 flex flex-col items-center justify-center h-full">
@@ -115,85 +251,301 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
 <script>
-  const sourceText = document.getElementById('sourceText') as HTMLTextAreaElement;
-  const secretKey = document.getElementById('secretKey') as HTMLInputElement;
+  // ── DOM refs ────────────────────────────────────────────────────────────────
+  const sourceText       = document.getElementById('sourceText')       as HTMLTextAreaElement;
+  const secretKey        = document.getElementById('secretKey')        as HTMLInputElement;
   const resultsContainer = document.getElementById('resultsContainer') as HTMLDivElement;
-  const apiStatus = document.getElementById('apiStatus') as HTMLSpanElement;
-  const charCount = document.getElementById('charCount') as HTMLSpanElement;
-  
-  const categoryBtns = document.querySelectorAll('.category-btn');
-  const methodBtns = document.querySelectorAll('.method-btn');
+  const apiStatus        = document.getElementById('apiStatus')        as HTMLSpanElement;
+  const charCount        = document.getElementById('charCount')        as HTMLSpanElement;
+  const advancedToggle   = document.getElementById('advancedToggle')   as HTMLButtonElement;
+  const advancedWrapper  = document.getElementById('advancedWrapper')  as HTMLDivElement;
+  const advChevron       = document.getElementById('advChevron')       as HTMLSpanElement;
+  const aesAad           = document.getElementById('aesAad')           as HTMLInputElement;
+  const generateKeyBtn   = document.getElementById('generateKeyBtn')   as HTMLButtonElement;
+  const generatedKeyOut  = document.getElementById('generatedKeyOut')  as HTMLInputElement;
+  const keygenMeta       = document.getElementById('keygenMeta')       as HTMLDivElement;
+  const copyKeyBtn       = document.getElementById('copyKeyBtn')       as HTMLButtonElement;
+  const useKeyBtn        = document.getElementById('useKeyBtn')        as HTMLButtonElement;
+  const keygenLen        = document.getElementById('keygenLen')        as HTMLInputElement;
+  const keygenLenLabel   = document.getElementById('keygenLenLabel')   as HTMLSpanElement;
+  const keygenSymToggle  = document.getElementById('keygenSymToggle')  as HTMLButtonElement;
 
+  const categoryBtns = document.querySelectorAll('.category-btn');
+  const methodBtns   = document.querySelectorAll('.method-btn');
+
+  // ── State ───────────────────────────────────────────────────────────────────
   let debounceTimer: ReturnType<typeof setTimeout>;
   let currentController: AbortController | null = null;
   let lastData: any = null;
-  let selectedCategory = 'all';
-  let selectedMethod = 'all';
+  let selectedCategory  = 'all';
+  let selectedMethod    = 'all';
+  let advancedEnabled   = false;
+  let keygenSymbols     = false;
 
+  const advOpts = {
+    aes_key_bits:      256  as 128 | 192 | 256,
+    aes_aad:           ''   as string,
+    aes_output_format: 'base64' as 'base64' | 'hex',
+    des_output_format: 'base64' as 'base64' | 'hex',
+    xor_output_format: 'base64' as 'base64' | 'hex',
+  };
+
+  let keygenAlgo   = 'aes-256';
+  let keygenFormat = 'base64';
+
+  // ── Advanced toggle ─────────────────────────────────────────────────────────
+  advancedToggle.addEventListener('click', () => {
+    advancedEnabled = !advancedEnabled;
+    advancedWrapper.classList.toggle('open', advancedEnabled);
+    advChevron.textContent = advancedEnabled ? '−' : '+';
+    if (lastData) processData();
+  });
+
+  // AES key bits
+  document.querySelectorAll('.adv-keybits').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.adv-keybits').forEach(b => {
+        b.classList.remove('active-adv', 'border-neon-green', 'text-neon-green');
+        b.classList.add('border-dark-gray', 'text-light-gray');
+      });
+      btn.classList.add('active-adv', 'border-neon-green', 'text-neon-green');
+      btn.classList.remove('border-dark-gray', 'text-light-gray');
+      advOpts.aes_key_bits = parseInt((btn as HTMLButtonElement).dataset.bits!) as 128 | 192 | 256;
+      if (sourceText.value.trim()) processData();
+    });
+  });
+
+  // AES output format
+  document.querySelectorAll('.adv-aes-fmt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.adv-aes-fmt').forEach(b => {
+        b.classList.remove('active-adv', 'border-neon-green', 'text-neon-green');
+        b.classList.add('border-dark-gray', 'text-light-gray');
+      });
+      btn.classList.add('active-adv', 'border-neon-green', 'text-neon-green');
+      btn.classList.remove('border-dark-gray', 'text-light-gray');
+      advOpts.aes_output_format = (btn as HTMLButtonElement).dataset.fmt as 'base64' | 'hex';
+      if (sourceText.value.trim()) processData();
+    });
+  });
+
+  // 3DES output format
+  document.querySelectorAll('.adv-des-fmt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.adv-des-fmt').forEach(b => {
+        b.classList.remove('active-adv', 'border-neon-green', 'text-neon-green');
+        b.classList.add('border-dark-gray', 'text-light-gray');
+      });
+      btn.classList.add('active-adv', 'border-neon-green', 'text-neon-green');
+      btn.classList.remove('border-dark-gray', 'text-light-gray');
+      advOpts.des_output_format = (btn as HTMLButtonElement).dataset.fmt as 'base64' | 'hex';
+      if (sourceText.value.trim()) processData();
+    });
+  });
+
+  // XOR output format
+  document.querySelectorAll('.adv-xor-fmt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.adv-xor-fmt').forEach(b => {
+        b.classList.remove('active-adv', 'border-neon-green', 'text-neon-green');
+        b.classList.add('border-dark-gray', 'text-light-gray');
+      });
+      btn.classList.add('active-adv', 'border-neon-green', 'text-neon-green');
+      btn.classList.remove('border-dark-gray', 'text-light-gray');
+      advOpts.xor_output_format = (btn as HTMLButtonElement).dataset.fmt as 'base64' | 'hex';
+      if (sourceText.value.trim()) processData();
+    });
+  });
+
+  // AAD input
+  aesAad.addEventListener('input', () => {
+    advOpts.aes_aad = aesAad.value;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(processData, 400);
+  });
+
+  // ── Key Generator ───────────────────────────────────────────────────────────
+  function updateKeygenUI() {
+    const isPwd     = keygenAlgo === 'password';
+    const isXorLike = keygenAlgo === 'xor' || isPwd;
+
+    document.getElementById('keygenFmtSection')!.classList.toggle('hidden', isPwd);
+    document.getElementById('keygenLenSection')!.classList.toggle('hidden', !isXorLike);
+    document.getElementById('keygenSymSection')!.classList.toggle('hidden', !isPwd);
+
+    if (keygenLenLabel) {
+      keygenLenLabel.textContent = isPwd ? 'Length (chars)' : 'Length (bytes)';
+    }
+  }
+
+  document.querySelectorAll('.keygen-algo').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.keygen-algo').forEach(b => {
+        b.classList.remove('border-neon-green', 'text-neon-green');
+        b.classList.add('border-dark-gray', 'text-light-gray');
+      });
+      btn.classList.add('border-neon-green', 'text-neon-green');
+      btn.classList.remove('border-dark-gray', 'text-light-gray');
+      keygenAlgo = (btn as HTMLButtonElement).dataset.algo!;
+      updateKeygenUI();
+    });
+  });
+
+  document.querySelectorAll('.keygen-fmt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.keygen-fmt').forEach(b => {
+        b.classList.remove('border-neon-green', 'text-neon-green');
+        b.classList.add('border-dark-gray', 'text-light-gray');
+      });
+      btn.classList.add('border-neon-green', 'text-neon-green');
+      btn.classList.remove('border-dark-gray', 'text-light-gray');
+      keygenFormat = (btn as HTMLButtonElement).dataset.fmt!;
+    });
+  });
+
+  keygenSymToggle.addEventListener('click', () => {
+    keygenSymbols = !keygenSymbols;
+    keygenSymToggle.textContent = keygenSymbols ? 'ON' : 'OFF';
+    keygenSymToggle.classList.toggle('border-neon-green', keygenSymbols);
+    keygenSymToggle.classList.toggle('text-neon-green', keygenSymbols);
+    keygenSymToggle.classList.toggle('border-dark-gray', !keygenSymbols);
+    keygenSymToggle.classList.toggle('text-light-gray', !keygenSymbols);
+  });
+
+  async function generateKey() {
+    generateKeyBtn.textContent  = 'GENERATING...';
+    generateKeyBtn.disabled     = true;
+    generatedKeyOut.value       = '';
+    keygenMeta.classList.add('hidden');
+
+    try {
+      const res = await fetch('/api/generate-key', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          algorithm:       keygenAlgo,
+          format:          keygenFormat,
+          length:          parseInt(keygenLen.value) || 32,
+          include_symbols: keygenSymbols,
+        }),
+      });
+
+      if (!res.ok) throw new Error('Generation failed');
+      const data = await res.json();
+      generatedKeyOut.value = data.key;
+
+      if (data.bits) {
+        keygenMeta.textContent = `${data.bits}-bit / ${data.bytes}B`;
+        keygenMeta.classList.remove('hidden');
+      }
+    } catch {
+      generatedKeyOut.value = 'Error — could not generate key';
+    } finally {
+      generateKeyBtn.textContent = 'GENERATE';
+      generateKeyBtn.disabled    = false;
+    }
+  }
+
+  generateKeyBtn.addEventListener('click', generateKey);
+
+  copyKeyBtn.addEventListener('click', () => {
+    const val = generatedKeyOut.value;
+    if (!val || val.startsWith('Error')) return;
+    navigator.clipboard.writeText(val)
+      .then(() => {
+        const orig = copyKeyBtn.textContent!;
+        copyKeyBtn.textContent = 'COPIED!';
+        copyKeyBtn.classList.add('border-neon-green', 'text-neon-green');
+        setTimeout(() => {
+          copyKeyBtn.textContent = orig;
+          copyKeyBtn.classList.remove('border-neon-green', 'text-neon-green');
+        }, 2000);
+      })
+      .catch(() => {
+        copyKeyBtn.textContent = 'FAILED!';
+        setTimeout(() => { copyKeyBtn.textContent = 'COPY'; }, 2000);
+      });
+  });
+
+  useKeyBtn.addEventListener('click', () => {
+    const val = generatedKeyOut.value;
+    if (!val || val.startsWith('Error')) return;
+    secretKey.value = val;
+    secretKey.dispatchEvent(new Event('input'));
+    useKeyBtn.textContent = 'APPLIED ✓';
+    useKeyBtn.classList.add('border-neon-green', 'text-neon-green', 'bg-neon-green/10');
+    setTimeout(() => {
+      useKeyBtn.textContent = 'USE AS KEY';
+      useKeyBtn.classList.remove('border-neon-green', 'text-neon-green', 'bg-neon-green/10');
+    }, 2000);
+  });
+
+  // ── Process Data ────────────────────────────────────────────────────────────
   async function processData() {
     const text = sourceText.value;
-    const key = secretKey.value;
+    const key  = secretKey.value;
 
     if (!text.trim()) {
       lastData = null;
       resultsContainer.innerHTML = '<div class="text-center text-light-gray font-mono py-10 opacity-50">AWAITING INPUT...</div>';
       apiStatus.textContent = 'READY';
-      apiStatus.className = 'text-neon-green font-bold';
+      apiStatus.className   = 'text-neon-green font-bold';
       return;
     }
 
-    if (currentController) {
-      currentController.abort();
-    }
+    if (currentController) currentController.abort();
     currentController = new AbortController();
 
     apiStatus.textContent = 'PROCESSING...';
-    apiStatus.className = 'text-yellow-400 font-bold animate-pulse';
+    apiStatus.className   = 'text-yellow-400 font-bold animate-pulse';
 
     try {
-      const response = await fetch(`/api/process`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          text, 
-          key, 
-          category: selectedCategory, 
-          method: selectedMethod 
+      const response = await fetch('/api/process', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text,
+          key,
+          category: selectedCategory,
+          method:   selectedMethod,
+          advanced: advancedEnabled ? {
+            aes_key_bits:      advOpts.aes_key_bits,
+            aes_aad:           advOpts.aes_aad || null,
+            aes_output_format: advOpts.aes_output_format,
+            des_output_format: advOpts.des_output_format,
+            xor_output_format: advOpts.xor_output_format,
+          } : null,
         }),
-        signal: currentController.signal
+        signal: currentController.signal,
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || 'API Error');
-      }
+      if (!response.ok) throw new Error(data.detail || 'API Error');
 
       lastData = data;
       renderResults();
       apiStatus.textContent = 'SUCCESS';
-      apiStatus.className = 'text-neon-green font-bold';
+      apiStatus.className   = 'text-neon-green font-bold';
     } catch (error: any) {
       if (error.name === 'AbortError') return;
-      console.error(error);
       apiStatus.textContent = 'ERROR';
-      apiStatus.className = 'text-red-500 font-bold';
+      apiStatus.className   = 'text-red-500 font-bold';
       resultsContainer.innerHTML = `<div class="text-red-500 font-mono py-4 px-4 bg-red-500/10 border border-red-500/30">${escapeHtml(error.message || 'Failed to communicate with backend.')}</div>`;
     }
   }
 
+  // ── Render Results ──────────────────────────────────────────────────────────
   function renderResults() {
     if (!lastData || Object.keys(lastData).length === 0) return;
-    
-    let html = '';
-    let counter = 0; // To generate unique IDs
-    
+
+    let html    = '';
+    let counter = 0;
+
     for (const [category, items] of Object.entries(lastData)) {
       if (selectedCategory !== 'all' && selectedCategory !== category) continue;
 
@@ -202,29 +554,24 @@
         if (selectedMethod !== 'all' && selectedMethod !== method) continue;
         counter++;
 
-        // Determine if it's a simple string or a dict (Encode/Decode)
         if (typeof result === 'string') {
           methodsHtml += `
             <div class="bg-black-bg border border-dark-gray p-4 hover:border-neon-green/50 transition-all card-container">
               <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
                 <span class="text-xs font-bold text-pure-white bg-dark-gray/50 px-3 py-1">${method}</span>
-                <button class="copy-btn shrink-0 text-xs text-pure-white font-bold border border-dark-gray hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 bg-dark-gray/20 px-4 py-1.5 transition-all active:scale-95">
-                  COPY
-                </button>
+                <button class="copy-btn shrink-0 text-xs text-pure-white font-bold border border-dark-gray hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 bg-dark-gray/20 px-4 py-1.5 transition-all active:scale-95">COPY</button>
               </div>
               <div class="result-text font-mono text-sm text-light-gray break-all max-h-40 overflow-y-auto pr-2 custom-scroll whitespace-pre-wrap">${escapeHtml(result)}</div>
-            </div>
-          `;
+            </div>`;
         } else {
-          // It's an object with multiple modes (e.g., Encode/Decode)
           const keys = Object.keys(result);
-          
-          let buttonsHtml = keys.map((k, i) => `
-            <button class="pane-switch px-3 py-1 text-[10px] uppercase font-bold tracking-wider transition-colors ${i===0 ? 'active text-neon-green bg-dark-gray' : 'text-light-gray hover:text-pure-white'}" data-target="pane${i}-${counter}">${k}</button>
+
+          const buttonsHtml = keys.map((k, i) => `
+            <button class="pane-switch px-3 py-1 text-[10px] uppercase font-bold tracking-wider transition-colors ${i === 0 ? 'active text-neon-green bg-dark-gray' : 'text-light-gray hover:text-pure-white'}" data-target="pane${i}-${counter}">${k}</button>
           `).join('');
 
-          let panesHtml = keys.map((k, i) => `
-            <div id="pane${i}-${counter}" class="result-text pane ${i===0 ? 'block' : 'hidden'} font-mono text-sm text-light-gray break-all max-h-40 overflow-y-auto pr-2 custom-scroll whitespace-pre-wrap">${escapeHtml(result[k])}</div>
+          const panesHtml = keys.map((k, i) => `
+            <div id="pane${i}-${counter}" class="result-text pane ${i === 0 ? 'block' : 'hidden'} font-mono text-sm text-light-gray break-all max-h-40 overflow-y-auto pr-2 custom-scroll whitespace-pre-wrap">${escapeHtml(result[k])}</div>
           `).join('');
 
           methodsHtml += `
@@ -232,23 +579,15 @@
               <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
                 <div class="flex items-center gap-3">
                   <span class="text-xs font-bold text-pure-white bg-dark-gray/50 px-3 py-1">${method}</span>
-                  <div class="flex bg-black-bg border border-dark-gray rounded-sm p-0.5">
-                    ${buttonsHtml}
-                  </div>
+                  <div class="flex bg-black-bg border border-dark-gray rounded-sm p-0.5">${buttonsHtml}</div>
                 </div>
-                <button class="copy-btn shrink-0 text-xs text-pure-white font-bold border border-dark-gray hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 bg-dark-gray/20 px-4 py-1.5 transition-all active:scale-95">
-                  COPY
-                </button>
+                <button class="copy-btn shrink-0 text-xs text-pure-white font-bold border border-dark-gray hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 bg-dark-gray/20 px-4 py-1.5 transition-all active:scale-95">COPY</button>
               </div>
-              
-              <div class="relative">
-                ${panesHtml}
-              </div>
-            </div>
-          `;
+              <div class="relative">${panesHtml}</div>
+            </div>`;
         }
       }
-      
+
       if (methodsHtml) {
         html += `<div class="mb-8">
           <h3 class="text-neon-green text-sm font-bold tracking-widest uppercase mb-4 border-b border-neon-green/30 pb-2">${category}</h3>
@@ -257,43 +596,35 @@
       }
     }
 
-    if (html === '') {
-      html = '<div class="text-center text-light-gray font-mono py-10 opacity-50">No results found for this selection.</div>';
-    }
-
-    resultsContainer.innerHTML = html;
-
+    resultsContainer.innerHTML = html || '<div class="text-center text-light-gray font-mono py-10 opacity-50">No results found for this selection.</div>';
     attachDynamicListeners();
   }
 
+  // ── Dynamic Listeners ───────────────────────────────────────────────────────
   function attachDynamicListeners() {
-    // Copy buttons
     document.querySelectorAll('.copy-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLButtonElement;
-        const card = target.closest('.card-container');
+        const card   = target.closest('.card-container');
         if (!card) return;
-
-        // Find the currently visible result text
-        let visiblePane = Array.from(card.querySelectorAll('.result-text')).find(el => !el.classList.contains('hidden'));
-        
-        if (visiblePane && visiblePane.textContent) {
-          navigator.clipboard.writeText(visiblePane.textContent)
+        const visible = Array.from(card.querySelectorAll('.result-text')).find(el => !el.classList.contains('hidden'));
+        if (visible?.textContent) {
+          navigator.clipboard.writeText(visible.textContent)
             .then(() => {
-              const originalText = target.innerText;
+              const orig = target.innerText;
               target.innerText = 'COPIED!';
               target.classList.add('border-neon-green', 'text-neon-green', 'bg-neon-green/20');
               setTimeout(() => {
-                target.innerText = originalText;
+                target.innerText = orig;
                 target.classList.remove('border-neon-green', 'text-neon-green', 'bg-neon-green/20');
               }, 2000);
             })
             .catch(() => {
-              const originalText = target.innerText;
+              const orig = target.innerText;
               target.innerText = 'FAILED!';
               target.classList.add('border-red-500', 'text-red-500');
               setTimeout(() => {
-                target.innerText = originalText;
+                target.innerText = orig;
                 target.classList.remove('border-red-500', 'text-red-500');
               }, 2000);
             });
@@ -301,98 +632,81 @@
       });
     });
 
-    // Pane switches
     document.querySelectorAll('.pane-switch').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const target = e.currentTarget as HTMLButtonElement;
         const parent = target.parentElement;
-        const card = target.closest('.card-container');
+        const card   = target.closest('.card-container');
         if (!parent || !card) return;
-
-        // Reset sibling buttons
         parent.querySelectorAll('.pane-switch').forEach(b => {
           b.classList.remove('active', 'text-neon-green', 'bg-dark-gray');
           b.classList.add('text-light-gray');
         });
-
-        // Activate clicked button
         target.classList.add('active', 'text-neon-green', 'bg-dark-gray');
         target.classList.remove('text-light-gray');
-
-        // Hide all panes, show target
         card.querySelectorAll('.pane').forEach(p => p.classList.add('hidden'));
-        const paneId = target.getAttribute('data-target');
-        const targetPane = document.getElementById(paneId!);
-        if (targetPane) targetPane.classList.remove('hidden');
+        const pane = document.getElementById(target.getAttribute('data-target')!);
+        pane?.classList.remove('hidden');
       });
     });
   }
 
+  // ── HTML Escape ─────────────────────────────────────────────────────────────
   function escapeHtml(unsafe: string) {
-    return (unsafe || "").toString()
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
+    return (unsafe || '').toString()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  // Handle Category Selection (Accordion & Filtering)
+  // ── Category / Method listeners ─────────────────────────────────────────────
   categoryBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const target = e.currentTarget as HTMLButtonElement;
-      const cat = target.getAttribute('data-category') || 'all';
-      
+      const cat    = target.getAttribute('data-category') || 'all';
+
       if (cat === 'all') {
-        // Close all accordions
         document.querySelectorAll('.accordion-wrapper').forEach(w => w.classList.remove('open'));
-        document.querySelectorAll('.chevron').forEach(icon => icon.textContent = '+');
+        document.querySelectorAll('.chevron').forEach(ic => ic.textContent = '+');
         selectedCategory = 'all';
-        selectedMethod = 'all';
+        selectedMethod   = 'all';
       } else {
-        const group = target.closest('.menu-group');
-        if (group) {
-          const wrapper = group.querySelector('.accordion-wrapper');
-          const chevron = target.querySelector('.chevron');
-          
-          if (selectedCategory === cat && wrapper?.classList.contains('open')) {
-             wrapper.classList.remove('open');
-             if(chevron) chevron.textContent = '+';
-             selectedCategory = 'all';
-             selectedMethod = 'all';
-          } else {
-            // Close others
-            document.querySelectorAll('.accordion-wrapper').forEach(w => w.classList.remove('open'));
-            document.querySelectorAll('.chevron').forEach(icon => icon.textContent = '+');
-            
-            wrapper?.classList.add('open');
-            if(chevron) chevron.textContent = '-';
-            selectedCategory = cat;
-            selectedMethod = 'all';
-          }
+        const group   = target.closest('.menu-group');
+        const wrapper = group?.querySelector('.accordion-wrapper');
+        const chevron = target.querySelector('.chevron');
+
+        if (selectedCategory === cat && wrapper?.classList.contains('open')) {
+          wrapper.classList.remove('open');
+          if (chevron) chevron.textContent = '+';
+          selectedCategory = 'all';
+          selectedMethod   = 'all';
+        } else {
+          document.querySelectorAll('.accordion-wrapper').forEach(w => w.classList.remove('open'));
+          document.querySelectorAll('.chevron').forEach(ic => ic.textContent = '+');
+          wrapper?.classList.add('open');
+          if (chevron) chevron.textContent = '−';
+          selectedCategory = cat;
+          selectedMethod   = 'all';
         }
       }
-
       updateMenuUI(target);
       processData();
     });
   });
 
-  // Handle Specific Method Selection
   methodBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const target = e.currentTarget as HTMLButtonElement;
-      
       selectedMethod = target.getAttribute('data-method') || 'all';
-      
       methodBtns.forEach(b => {
         b.classList.remove('text-neon-green', 'font-bold', 'bg-dark-gray/40');
         b.classList.add('text-light-gray');
       });
       target.classList.remove('text-light-gray');
       target.classList.add('text-neon-green', 'font-bold', 'bg-dark-gray/40');
-
       processData();
     });
   });
@@ -400,13 +714,10 @@
   function updateMenuUI(activeBtn: HTMLButtonElement) {
     categoryBtns.forEach(b => {
       b.classList.remove('active', 'text-neon-green', 'border-neon-green', 'bg-dark-gray/20');
-      if (b.getAttribute('data-category') !== 'all') {
-        b.classList.add('text-light-gray');
-      }
+      if (b.getAttribute('data-category') !== 'all') b.classList.add('text-light-gray');
     });
     activeBtn.classList.add('active', 'text-neon-green', 'border-neon-green', 'bg-dark-gray/20');
     activeBtn.classList.remove('text-light-gray');
-
     if (selectedMethod === 'all') {
       methodBtns.forEach(b => {
         b.classList.remove('text-neon-green', 'font-bold', 'bg-dark-gray/40');
@@ -415,52 +726,32 @@
     }
   }
 
-  // Event Listeners
+  // ── Input listeners ─────────────────────────────────────────────────────────
   const onInput = () => {
-    // Update char counter
     const len = sourceText.value.length;
     charCount.textContent = `${len} / 1000`;
-    if (len >= 1000) {
-      charCount.classList.add('text-red-500');
-      charCount.classList.remove('text-light-gray');
-    } else {
-      charCount.classList.remove('text-red-500');
-      charCount.classList.add('text-light-gray');
-    }
-
+    charCount.classList.toggle('text-red-500', len >= 1000);
+    charCount.classList.toggle('text-light-gray', len < 1000);
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(processData, 300);
   };
 
   sourceText.addEventListener('input', onInput);
   secretKey.addEventListener('input', onInput);
-
 </script>
 
 <style>
-  .custom-scroll::-webkit-scrollbar {
-    width: 6px;
-  }
-  .custom-scroll::-webkit-scrollbar-track {
-    background: var(--color-black-bg);
-  }
-  .custom-scroll::-webkit-scrollbar-thumb {
-    background: var(--color-dark-gray);
-  }
-  .custom-scroll:hover::-webkit-scrollbar-thumb {
-    background: var(--color-neon-green);
-  }
+  .custom-scroll::-webkit-scrollbar       { width: 6px; }
+  .custom-scroll::-webkit-scrollbar-track { background: var(--color-black-bg); }
+  .custom-scroll::-webkit-scrollbar-thumb { background: var(--color-dark-gray); }
+  .custom-scroll:hover::-webkit-scrollbar-thumb { background: var(--color-neon-green); }
 
-  /* Smooth Accordion CSS */
+  /* Smooth accordion */
   .accordion-wrapper {
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.3s ease-out;
   }
-  .accordion-wrapper.open {
-    grid-template-rows: 1fr;
-  }
-  .accordion-inner {
-    overflow: hidden;
-  }
+  .accordion-wrapper.open { grid-template-rows: 1fr; }
+  .accordion-inner { overflow: hidden; }
 </style>
