@@ -1,31 +1,51 @@
-import base64
-import secrets
-import string
+import os
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-import os
 
 from .models import TextInput, AdvancedOptions, KeyGenRequest
-from .services import hashing, encoding, encryption, formatting
+from .services import hashing, encoding, encryption, formatting, keygen
+
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
-limiter = Limiter(key_func=get_remote_address)
+# When running behind a reverse proxy (nginx), set TRUST_PROXY=1 so that
+# X-Forwarded-For is used instead of the always-localhost request.client.host.
+# WARNING: Only enable TRUST_PROXY when the proxy is properly configured to
+#          strip/replace X-Forwarded-For, otherwise clients can spoof IPs.
+
+def _get_client_ip(request: Request) -> str:
+    if os.getenv("TRUST_PROXY", "0") == "1":
+        xff = request.headers.get("X-Forwarded-For", "")
+        if xff:
+            # Leftmost IP is the original client; rightmost is the last proxy
+            return xff.split(",")[0].strip()
+    return request.client.host if request.client else "127.0.0.1"
+
+
+limiter = Limiter(key_func=_get_client_ip)
 
 app = FastAPI(title="CryptoWeb API")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+# ── CORS ──────────────────────────────────────────────────────────────────────
+# Override via CORS_ORIGINS env var for production, e.g.:
+#   CORS_ORIGINS=https://example.com,https://www.example.com
+# Defaults to "*" for local development convenience only.
+
+_cors_env = os.getenv("CORS_ORIGINS", "")
+_cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()] or ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -36,16 +56,21 @@ app.add_middleware(
 def process_all(request: Request, payload: TextInput):
     text = payload.text
     key  = payload.key or ""
-    adv  = payload.advanced or AdvancedOptions()
 
+    # Early return for empty input — no error, just no results
+    if not text:
+        return {}
+
+    # Validate sizes before any processing
     if len(text) > 1000:
         raise HTTPException(status_code=400, detail="Payload exceeds the maximum allowed length of 1000 characters.")
     if len(key) > 256:
         raise HTTPException(status_code=400, detail="Secret key exceeds the maximum allowed length of 256 characters.")
+
+    adv = payload.advanced or AdvancedOptions()
+
     if adv.aes_aad and len(adv.aes_aad) > 256:
         raise HTTPException(status_code=400, detail="AAD exceeds the maximum allowed length of 256 characters.")
-    if not text:
-        return {}
 
     return {
         "hashing": {
@@ -88,36 +113,17 @@ def process_all(request: Request, payload: TextInput):
 @app.post("/api/generate-key")
 @limiter.limit("60/minute")
 def generate_key(request: Request, payload: KeyGenRequest):
-    algo   = payload.algorithm
-    fmt    = payload.format
-    length = payload.length
-
-    if algo == "password":
-        charset = string.ascii_letters + string.digits
-        if payload.include_symbols:
-            charset += string.punctuation
-        key = ''.join(secrets.choice(charset) for _ in range(length))
-        return {"key": key, "bits": None, "bytes": length}
-
-    key_bytes_count = {
-        "aes-128": 16,
-        "aes-192": 24,
-        "aes-256": 32,
-        "3des":    24,
-        "xor":     length,
-    }[algo]
-
-    raw = secrets.token_bytes(key_bytes_count)
-
-    if fmt == "hex":
-        key = raw.hex()
-    else:
-        key = base64.b64encode(raw).decode('utf-8')
-
-    return {"key": key, "bits": key_bytes_count * 8, "bytes": key_bytes_count}
+    return keygen.generate(
+        algorithm=payload.algorithm,
+        fmt=payload.format,
+        length=payload.length,
+        include_symbols=payload.include_symbols,
+    )
 
 
 # ── Static files (Astro build) ────────────────────────────────────────────────
+# Mounted AFTER API routes so /api/* is never intercepted by the static handler.
+
 DIST_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "dist")
 
 if os.path.isdir(DIST_DIR):

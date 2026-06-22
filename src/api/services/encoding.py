@@ -45,8 +45,13 @@ def encode_binary(text: str) -> str:
 def decode_binary(text: str) -> str:
     try:
         bits = text.replace(' ', '')
-        if len(bits) % 8 != 0:
+        if not bits:
             return "Invalid Binary"
+        # Reject anything that isn't 0 or 1 before doing any integer parsing
+        if not all(c in '01' for c in bits):
+            return "Invalid Binary: only 0 and 1 are allowed"
+        if len(bits) % 8 != 0:
+            return "Invalid Binary: length must be a multiple of 8"
         byte_vals = bytes(int(bits[i:i+8], 2) for i in range(0, len(bits), 8))
         return byte_vals.decode('utf-8')
     except Exception:

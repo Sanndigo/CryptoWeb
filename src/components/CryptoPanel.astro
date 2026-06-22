@@ -303,7 +303,7 @@
     advancedEnabled = !advancedEnabled;
     advancedWrapper.classList.toggle('open', advancedEnabled);
     advChevron.textContent = advancedEnabled ? '−' : '+';
-    if (lastData) processData();
+    if (sourceText.value.trim()) processData();
   });
 
   // AES key bits

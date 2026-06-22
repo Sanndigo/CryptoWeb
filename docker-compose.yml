@@ -2,9 +2,22 @@ services:
   cryptoweb:
     build: .
     ports:
-      # Пробрасываем только на localhost (127.0.0.1) на нестандартный порт 8100
-      - '8100:8100'
+      # Bind only to localhost — expose via nginx for production internet access
+      - '127.0.0.1:8100:8100'
     environment:
       - ENV=production
+      # Set CORS_ORIGINS to your domain(s) in production, e.g.:
+      #   CORS_ORIGINS=https://example.com
+      # Leave unset (or "*") for local-only deployments.
+      - CORS_ORIGINS=
+      # Set TRUST_PROXY=1 only when a trusted reverse proxy (nginx) is in front.
+      # This enables X-Forwarded-For for accurate rate limiting per client IP.
+      - TRUST_PROXY=0
     restart: always
-    
+    healthcheck:
+      # wget is available in alpine; checks that the HTTP server responds
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8100/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
