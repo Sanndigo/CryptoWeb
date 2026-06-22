@@ -33,8 +33,17 @@ _3DES_SALT = b'cryptoweb-3des-kdf-v1'
 def _derive_key(passphrase: str, salt: bytes, key_bits: int) -> bytes:
     """
     Derive a key via PBKDF2-HMAC-SHA256.
+    
     LRU-cached: repeated calls with the same (passphrase, salt, bits) are instant,
     so interactive use (live preview) stays responsive after the first derivation.
+    
+    SECURITY NOTE ON LRU CACHE:
+    Caching keys in memory exposes them to memory leaks/dumps/side-channels.
+    In a shared multi-tenant backend server, this cache retains the last 64
+    cleartext keys/passphrases and their derived keys. For maximum security,
+    especially in a production environment where you cannot guarantee memory
+    isolation, remove the `@functools.lru_cache` decorator so keys are garbage-collected
+    immediately after the request cycle completes.
     """
     return hashlib.pbkdf2_hmac(
         'sha256',
@@ -74,6 +83,13 @@ def _decode_input(text: str, fmt: str) -> bytes:
     return base64.b64decode(text.encode('utf-8'))
 
 
+# ── Version Markers for Dynamic Salts ──────────────────────────────────────────
+# Prepend unique prefixes to dynamic-salt ciphertexts to prevent false-positives
+# and allow seamless fallback decryption for legacy static-salt ciphertexts.
+_MAGIC_PREFIX_AES  = b'CWA1'  # CryptoWeb AES Version 1
+_MAGIC_PREFIX_3DES = b'CWD1'  # CryptoWeb 3DES Version 1
+
+
 # ── AES-256-GCM ───────────────────────────────────────────────────────────────
 
 def encrypt_aes(
@@ -86,12 +102,16 @@ def encrypt_aes(
     if not key:
         return "Key is required for AES"
     try:
-        key_bytes = _get_aes_key(key, key_bits)
+        # Generate a unique 16-byte salt for this ciphertext
+        salt = os.urandom(16)
+        key_bytes = _derive_key(key, salt, key_bits)
         nonce = os.urandom(12)                          # 96-bit nonce for GCM
         aesgcm = AESGCM(key_bytes)
         aad_bytes = aad.encode('utf-8') if aad else None
         ct = aesgcm.encrypt(nonce, text.encode('utf-8'), aad_bytes)
-        return _encode_output(nonce + ct, output_format)
+        # Prepend magic prefix and salt to ciphertext
+        payload = _MAGIC_PREFIX_AES + salt + nonce + ct
+        return _encode_output(payload, output_format)
     except Exception:
         return "Encryption error"
 
@@ -106,12 +126,23 @@ def decrypt_aes(
     if not key:
         return "Key is required for AES"
     try:
-        key_bytes = _get_aes_key(key, key_bits)
         raw_data = _decode_input(text, output_format)
-        if len(raw_data) < 28:                          # 12 nonce + 16 tag minimum
-            return "Decryption error: Invalid ciphertext"
-        nonce     = raw_data[:12]
-        ct        = raw_data[12:]
+        
+        # Determine format: new dynamic salt vs legacy static salt
+        # New format size: 4 (magic) + 16 (salt) + 12 (nonce) + tag (16) = min 48 bytes
+        if len(raw_data) >= 48 and raw_data.startswith(_MAGIC_PREFIX_AES):
+            salt      = raw_data[4:20]
+            nonce     = raw_data[20:32]
+            ct        = raw_data[32:]
+            key_bytes = _derive_key(key, salt, key_bits)
+        else:
+            # Fallback to legacy static salt format
+            if len(raw_data) < 28:                          # 12 nonce + 16 tag minimum
+                return "Decryption error: Invalid ciphertext"
+            nonce     = raw_data[:12]
+            ct        = raw_data[12:]
+            key_bytes = _derive_key(key, _AES_SALT, key_bits)
+
         aesgcm    = AESGCM(key_bytes)
         aad_bytes = aad.encode('utf-8') if aad else None
         plaintext = aesgcm.decrypt(nonce, ct, aad_bytes)
@@ -126,14 +157,18 @@ def encrypt_3des(text: str, key: str, output_format: str = "base64") -> str:
     if not key:
         return "Key is required for 3DES"
     try:
-        key_bytes = _get_3des_key(key)
+        # Generate a unique 16-byte salt for this ciphertext
+        salt = os.urandom(16)
+        key_bytes = _derive_key(key, salt, 192)
         iv = os.urandom(8)
         cipher = Cipher(TripleDES(key_bytes), modes.CBC(iv), backend=default_backend())
         encryptor = cipher.encryptor()
         padder = padding.PKCS7(64).padder()
         padded = padder.update(text.encode('utf-8')) + padder.finalize()
         ct = encryptor.update(padded) + encryptor.finalize()
-        return _encode_output(iv + ct, output_format)
+        # Prepend magic prefix and salt to ciphertext
+        payload = _MAGIC_PREFIX_3DES + salt + iv + ct
+        return _encode_output(payload, output_format)
     except Exception:
         return "Encryption error"
 
@@ -142,12 +177,23 @@ def decrypt_3des(text: str, key: str, output_format: str = "base64") -> str:
     if not key:
         return "Key is required for 3DES"
     try:
-        key_bytes = _get_3des_key(key)
         raw_data = _decode_input(text, output_format)
-        if len(raw_data) < 8:
-            return "Decryption error: Invalid ciphertext"
-        iv = raw_data[:8]
-        ct = raw_data[8:]
+        
+        # Determine format: new dynamic salt vs legacy static salt
+        # New format size: 4 (magic) + 16 (salt) + 8 (iv) + min 1 block ct (8) = min 36 bytes
+        if len(raw_data) >= 36 and raw_data.startswith(_MAGIC_PREFIX_3DES):
+            salt      = raw_data[4:20]
+            iv        = raw_data[20:28]
+            ct        = raw_data[28:]
+            key_bytes = _derive_key(key, salt, 192)
+        else:
+            # Fallback to legacy static salt format
+            if len(raw_data) < 8:
+                return "Decryption error: Invalid ciphertext"
+            iv        = raw_data[:8]
+            ct        = raw_data[8:]
+            key_bytes = _derive_key(key, _3DES_SALT, 192)
+
         cipher = Cipher(TripleDES(key_bytes), modes.CBC(iv), backend=default_backend())
         decryptor = cipher.decryptor()
         padded = decryptor.update(ct) + decryptor.finalize()
