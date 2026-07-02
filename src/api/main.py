@@ -1,13 +1,23 @@
 import os
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi import Depends
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from .models import TextInput, AdvancedOptions, KeyGenRequest
+from .models import TextInput, AdvancedOptions, KeyGenRequest, ShareCreate, ShareResponse, ShareGet
 from .services import hashing, encoding, encryption, formatting, keygen
+from .services.db import init_db, get_db, redis_client, ShareAuditLog
+from sqlalchemy.ext.asyncio import AsyncSession
+from contextlib import asynccontextmanager
+import uuid
+import datetime
+import traceback
+
+from .logger import logger
 
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
@@ -27,9 +37,23 @@ def _get_client_ip(request: Request) -> str:
 
 limiter = Limiter(key_func=_get_client_ip)
 
-app = FastAPI(title="CryptoWeb API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("Starting up: initializing DB and caching layers.")
+    await init_db()
+    yield
+    logger.info("Shutting down: closing Redis connection.")
+    await redis_client.aclose()
+
+app = FastAPI(title="CryptoWeb API", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled server error: {exc}\n{traceback.format_exc()}")
+    from fastapi.responses import JSONResponse
+    return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
 
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
@@ -54,12 +78,11 @@ app.add_middleware(
 @app.post("/api/process")
 @limiter.limit("30/minute")
 def process_all(request: Request, payload: TextInput):
+    client_ip = _get_client_ip(request)
+    logger.info(f"Process request from {client_ip} | Category: {payload.category} | Method: {payload.method}")
+    
     text = payload.text
     key  = payload.key or ""
-
-    # Early return for empty input — no error, just no results
-    if not text:
-        return {}
 
     # Validate sizes before any processing
     if len(text) > 1000:
@@ -72,40 +95,62 @@ def process_all(request: Request, payload: TextInput):
     if adv.aes_aad and len(adv.aes_aad) > 256:
         raise HTTPException(status_code=400, detail="AAD exceeds the maximum allowed length of 256 characters.")
 
-    return {
-        "hashing": {
-            "MD5":     hashing.hash_md5(text),
-            "SHA-256": hashing.hash_sha256(text),
-            "SHA-512": hashing.hash_sha512(text),
-            "bcrypt":  hashing.hash_bcrypt(text),
-        },
-        "encoding": {
-            "Base64": {"Encode": encoding.encode_base64(text), "Decode": encoding.decode_base64(text)},
-            "URL":    {"Encode": encoding.encode_url(text),    "Decode": encoding.decode_url(text)},
-            "Hex":    {"Encode": encoding.encode_hex(text),    "Decode": encoding.decode_hex(text)},
-            "Binary": {"Encode": encoding.encode_binary(text), "Decode": encoding.decode_binary(text)},
-            "Morse":  {"Encode": encoding.encode_morse(text),  "Decode": encoding.decode_morse(text)},
-        },
-        "encryption": {
-            "AES-256": {
+    cat = payload.category
+    meth = payload.method
+    
+    res = {}
+
+    # Hashing
+    if cat in ("all", "hashing") or meth in ("MD5", "SHA-256", "SHA-512", "bcrypt"):
+        h_res = {}
+        if meth in ("all", "MD5"): h_res["MD5"] = hashing.hash_md5(text)
+        if meth in ("all", "SHA-256"): h_res["SHA-256"] = hashing.hash_sha256(text)
+        if meth in ("all", "SHA-512"): h_res["SHA-512"] = hashing.hash_sha512(text)
+        if meth in ("all", "bcrypt"): h_res["bcrypt"] = hashing.hash_bcrypt(text) if text else "Awaiting input..."
+        if h_res: res["hashing"] = h_res
+
+    # Encoding
+    if cat in ("all", "encoding") or meth in ("Base64", "URL", "Hex", "Binary", "Morse"):
+        e_res = {}
+        if meth in ("all", "Base64"): e_res["Base64"] = {"Encode": encoding.encode_base64(text), "Decode": encoding.decode_base64(text)}
+        if meth in ("all", "URL"): e_res["URL"] = {"Encode": encoding.encode_url(text), "Decode": encoding.decode_url(text)}
+        if meth in ("all", "Hex"): e_res["Hex"] = {"Encode": encoding.encode_hex(text), "Decode": encoding.decode_hex(text)}
+        if meth in ("all", "Binary"): e_res["Binary"] = {"Encode": encoding.encode_binary(text), "Decode": encoding.decode_binary(text)}
+        if meth in ("all", "Morse"): e_res["Morse"] = {"Encode": encoding.encode_morse(text), "Decode": encoding.decode_morse(text)}
+        if e_res: res["encoding"] = e_res
+
+    # Encryption
+    if cat in ("all", "encryption") or meth in ("AES-256", "3DES", "ROT13", "XOR"):
+        enc_res = {}
+        if meth in ("all", "AES-256"):
+            enc_res["AES-256"] = {
                 "Encrypt": encryption.encrypt_aes(text, key, adv.aes_key_bits, adv.aes_aad, adv.aes_output_format),
                 "Decrypt": encryption.decrypt_aes(text, key, adv.aes_key_bits, adv.aes_aad, adv.aes_output_format),
-            },
-            "3DES": {
+            }
+        if meth in ("all", "3DES"):
+            enc_res["3DES"] = {
                 "Encrypt": encryption.encrypt_3des(text, key, adv.des_output_format),
                 "Decrypt": encryption.decrypt_3des(text, key, adv.des_output_format),
-            },
-            "ROT13": encryption.rot13(text),
-            "XOR": {
+            }
+        if meth in ("all", "ROT13"):
+            enc_res["ROT13"] = encryption.rot13(text)
+        if meth in ("all", "XOR"):
+            enc_res["XOR"] = {
                 "Encrypt": encryption.xor_cipher(text, key, adv.xor_output_format),
                 "Decrypt": encryption.xor_decipher(text, key, adv.xor_output_format),
-            },
-        },
-        "formatting": {
-            "JSON":        {"Beautify": formatting.format_json_beautify(text), "Minify": formatting.format_json_minify(text)},
-            "JWT Decoder": formatting.decode_jwt(text),
-        },
-    }
+            }
+        if enc_res: res["encryption"] = enc_res
+
+    # Formatting
+    if cat in ("all", "formatting") or meth in ("JSON", "JWT Decoder"):
+        f_res = {}
+        if meth in ("all", "JSON"):
+            f_res["JSON"] = {"Beautify": formatting.format_json_beautify(text), "Minify": formatting.format_json_minify(text)}
+        if meth in ("all", "JWT Decoder"):
+            f_res["JWT Decoder"] = formatting.decode_jwt(text)
+        if f_res: res["formatting"] = f_res
+
+    return res
 
 
 # ── Key generation endpoint ───────────────────────────────────────────────────
@@ -113,6 +158,7 @@ def process_all(request: Request, payload: TextInput):
 @app.post("/api/generate-key")
 @limiter.limit("60/minute")
 def generate_key(request: Request, payload: KeyGenRequest):
+    logger.info(f"Key generation from {_get_client_ip(request)} | Algorithm: {payload.algorithm}")
     return keygen.generate(
         algorithm=payload.algorithm,
         fmt=payload.format,
@@ -120,6 +166,96 @@ def generate_key(request: Request, payload: KeyGenRequest):
         include_symbols=payload.include_symbols,
     )
 
+
+# ── Sharing endpoints ─────────────────────────────────────────────────────────
+
+@app.post("/api/share", response_model=ShareResponse)
+@limiter.limit("10/minute")
+async def create_share(request: Request, payload: ShareCreate, db: AsyncSession = Depends(get_db)):
+    share_id = str(uuid.uuid4())
+    # Save to Redis with 24h TTL
+    await redis_client.setex(f"share:{share_id}", 86400, payload.secret)
+    
+    expires = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
+    # Audit log
+    audit = ShareAuditLog(id=share_id, expires_at=expires)
+    db.add(audit)
+    await db.commit()
+    
+    logger.info(f"Share link created: {share_id} by {_get_client_ip(request)}")
+    return ShareResponse(uuid=share_id, expires_at=expires.isoformat())
+
+@app.get("/api/share/{share_id}", response_model=ShareGet)
+@limiter.limit("30/minute")
+async def get_share(request: Request, share_id: str, db: AsyncSession = Depends(get_db)):
+    secret = await redis_client.getdel(f"share:{share_id}")
+    if not secret:
+        logger.warning(f"Share link not found or already burned: {share_id} accessed by {_get_client_ip(request)}")
+        raise HTTPException(status_code=404, detail="Link expired or already used.")
+        
+    audit = await db.get(ShareAuditLog, share_id)
+    if audit:
+        audit.accessed_at = datetime.datetime.now(datetime.timezone.utc)
+        await db.commit()
+        
+    logger.info(f"Share link accessed and burned: {share_id} by {_get_client_ip(request)}")
+    return ShareGet(secret=secret)
+
+
+# ── Admin endpoints ───────────────────────────────────────────────────────────
+
+@app.get("/api/liquid-sector/admin/logs")
+@limiter.limit("10/minute")
+def get_admin_logs(request: Request, password: str = ""):
+    if password != os.getenv("ADMIN_PASSWORD", "admin"):
+        logger.warning(f"Failed admin login attempt from {_get_client_ip(request)}")
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    from .logger import LOG_FILE
+    if not os.path.exists(LOG_FILE):
+        return {"logs": ""}
+        
+    try:
+        with open(LOG_FILE, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            # Return up to 1000 lines
+            return {"logs": "".join(lines[-1000:])}
+    except Exception as e:
+        logger.error(f"Error reading logs: {e}")
+        return {"logs": "Error reading logs."}
+
+@app.delete("/api/liquid-sector/admin/logs")
+@limiter.limit("5/minute")
+def clear_admin_logs(request: Request, password: str = ""):
+    if password != os.getenv("ADMIN_PASSWORD", "admin"):
+        logger.warning(f"Failed admin log purge attempt from {_get_client_ip(request)}")
+        raise HTTPException(status_code=401, detail="Unauthorized")
+        
+    from .logger import LOG_FILE
+    try:
+        open(LOG_FILE, 'w').close()
+        logger.info(f"Logs purged by admin from {_get_client_ip(request)}")
+        return {"status": "cleared"}
+    except Exception as e:
+        logger.error(f"Error clearing logs: {e}")
+        raise HTTPException(status_code=500, detail="Could not clear logs")
+
+
+# ── HTML page endpoints ───────────────────────────────────────────────────────
+
+@app.get("/liquid-sector/admin/dbusage")
+async def serve_admin_html():
+    html_path = os.path.join(DIST_DIR, "liquid-sector", "admin", "dbusage", "index.html")
+    if not os.path.exists(html_path):
+        return FileResponse(os.path.join(DIST_DIR, "index.html"))
+    return FileResponse(html_path)
+
+@app.get("/share/{share_id}")
+async def serve_share_html(share_id: str):
+    html_path = os.path.join(DIST_DIR, "share", "index.html")
+    if not os.path.exists(html_path):
+        return FileResponse(os.path.join(DIST_DIR, "index.html"))
+    return FileResponse(html_path)
 
 # ── Static files (Astro build) ────────────────────────────────────────────────
 # Mounted AFTER API routes so /api/* is never intercepted by the static handler.

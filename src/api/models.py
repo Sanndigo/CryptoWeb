@@ -28,3 +28,13 @@ class KeyGenRequest(BaseModel):
     format: Literal["base64", "hex"] = "base64"
     length: int = Field(default=32, ge=8, le=512)  # bytes for XOR, chars for password
     include_symbols: bool = False
+
+class ShareCreate(BaseModel):
+    secret: str = Field(..., max_length=5000)
+
+class ShareResponse(BaseModel):
+    uuid: str
+    expires_at: str
+
+class ShareGet(BaseModel):
+    secret: str

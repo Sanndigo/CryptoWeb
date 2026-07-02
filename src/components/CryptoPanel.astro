@@ -7,9 +7,7 @@
   <div class="lg:col-span-3 tech-panel flex flex-col space-y-1 sticky top-24 max-h-[80vh] overflow-y-auto custom-scroll">
     <h3 class="text-xs text-pure-white font-bold tracking-widest uppercase mb-2 border-b border-dark-gray pb-2">Categories</h3>
 
-    <button class="category-btn text-left text-sm px-3 py-2 border border-transparent transition-colors active text-neon-green border-neon-green bg-dark-gray/20" data-category="all">
-      [ All Modes ]
-    </button>
+    
 
     <!-- Hashing -->
     <div class="menu-group">
@@ -172,7 +170,17 @@
       </div>
     </div>
 
-    <!-- ── Key Generator Panel ────────────────────────────────────────────── -->
+    <!-- ── Output Panel ───────────────────────────────────────────────────── -->
+    <div id="outputPanel" class="tech-panel min-h-[400px] transition-all duration-300">
+      <div class="space-y-6" id="resultsContainer">
+        <div class="text-center text-light-gray font-mono py-10 opacity-50 flex flex-col items-center justify-center h-full">
+          <span>AWAITING INPUT...</span>
+        </div>
+      </div>
+    </div>
+
+
+<!-- ── Key Generator Panel ────────────────────────────────────────────── -->
     <div class="tech-panel">
       <div class="flex items-center gap-3 mb-4">
         <h3 class="text-xs font-bold tracking-widest uppercase text-pure-white">⚡ Key Generator</h3>
@@ -240,18 +248,57 @@
                 class="shrink-0 text-xs font-bold px-3 py-2 border border-neon-green/60 text-neon-green/80 hover:border-neon-green hover:text-neon-green hover:bg-neon-green/10 transition-all active:scale-95">
           USE AS KEY
         </button>
+        <button id="openShareModalBtn"
+                class="shrink-0 text-xs font-bold px-3 py-2 border border-yellow-400/60 text-yellow-400 hover:border-yellow-400 hover:bg-yellow-400/10 transition-all active:scale-95">
+          SHARE KEY
+        </button>
+        <button id="infoShareBtn"
+                class="shrink-0 w-8 h-8 flex items-center justify-center border border-dark-gray text-light-gray hover:text-neon-green hover:border-neon-green rounded-full transition-all active:scale-95" title="What is Share?">
+          ?
+        </button>
       </div>
     </div>
 
-    <!-- ── Output Panel ───────────────────────────────────────────────────── -->
-    <div class="tech-panel min-h-[400px]">
-      <div class="space-y-6" id="resultsContainer">
-        <div class="text-center text-light-gray font-mono py-10 opacity-50 flex flex-col items-center justify-center h-full">
-          <span>AWAITING INPUT...</span>
-        </div>
       </div>
-    </div>
+</div>
 
+<!-- INFO MODAL -->
+<div id="infoModal" class="hidden fixed inset-0 z-50 bg-black-bg/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-black-bg border border-dark-gray w-full max-w-lg p-6 shadow-2xl relative">
+    <button id="closeInfoBtn" class="absolute top-4 right-4 text-light-gray hover:text-pure-white">✕</button>
+    <h2 class="text-neon-green font-bold tracking-widest uppercase mb-4">What is Key-Sharing?</h2>
+    <div class="text-sm font-mono text-light-gray space-y-4">
+      <p>Key-sharing allows you to safely send your generated keys to another person over the internet using a <strong>One-Time Link</strong>.</p>
+      <ul class="list-disc pl-5 space-y-2 text-pure-white">
+        <li>When you share a key, a unique, unguessable UUID4 link is generated.</li>
+        <li>The key is securely stored in an in-memory Redis database.</li>
+        <li><strong>Atomic Destruction:</strong> The very first time the link is opened, the key is permanently destroyed from the server.</li>
+        <li>If no one opens the link within 24 hours, it self-destructs automatically.</li>
+      </ul>
+      <p>This guarantees that if the recipient sees the key, no one else intercepted it.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE DISCLAIMER MODAL -->
+<div id="shareModal" class="hidden fixed inset-0 z-50 bg-black-bg/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-black-bg border border-yellow-400/50 w-full max-w-md p-6 shadow-2xl relative">
+    <button id="closeShareBtn" class="absolute top-4 right-4 text-light-gray hover:text-pure-white">✕</button>
+    <h2 class="text-yellow-400 font-bold tracking-widest uppercase mb-4 flex items-center gap-2">
+      ⚠ Security Disclaimer
+    </h2>
+    <div class="text-xs font-mono text-light-gray space-y-4 mb-6">
+      <p>You are about to generate a <strong>One-Time Link</strong> for the current key.</p>
+      <p class="text-red-400">If you or anyone else visits the generated link, the key will be immediately destroyed and the link will become permanently invalid.</p>
+      <p>The link will expire exactly <strong>24 hours</strong> from now if unread.</p>
+    </div>
+    <div class="flex gap-4">
+      <button id="confirmShareBtn" class="flex-1 bg-yellow-400/10 border border-yellow-400 text-yellow-400 font-bold py-2 text-xs tracking-widest hover:bg-yellow-400 hover:text-black-bg transition-all">I UNDERSTAND, GENERATE LINK</button>
+    </div>
+    <div id="shareResult" class="hidden mt-4 p-3 bg-neon-green/10 border border-neon-green break-all">
+      <p class="text-xs text-neon-green font-bold mb-2">Link Generated (Copy it now):</p>
+      <a id="shareLinkAnchor" href="#" target="_blank" class="text-pure-white text-xs underline hover:text-neon-green"></a>
+    </div>
   </div>
 </div>
 
@@ -282,8 +329,8 @@
   let debounceTimer: ReturnType<typeof setTimeout>;
   let currentController: AbortController | null = null;
   let lastData: any = null;
-  let selectedCategory  = 'all';
-  let selectedMethod    = 'all';
+  let selectedCategory  = '';
+  let selectedMethod    = '';
   let advancedEnabled   = false;
   let keygenSymbols     = false;
 
@@ -487,12 +534,25 @@
 
   // ── Process Data ────────────────────────────────────────────────────────────
   async function processData() {
+    if (!selectedCategory && !selectedMethod) {
+      resultsContainer.innerHTML = `
+        <div class="text-center py-12 flex flex-col items-center justify-center h-full border border-dark-gray bg-dark-gray/10">
+          <div class="text-neon-green text-5xl mb-4 font-mono animate-pulse">_</div>
+          <h2 class="text-pure-white text-xl font-bold tracking-widest uppercase mb-3">System Ready</h2>
+          <p class="text-light-gray font-mono text-sm max-w-md">Please select a cryptographic method or category from the sidebar to begin processing.</p>
+        </div>
+      `;
+      apiStatus.textContent = 'READY';
+      apiStatus.className   = 'text-neon-green font-bold';
+      return;
+    }
+
     const text = sourceText.value;
     const key  = secretKey.value;
 
     if (!text.trim()) {
       lastData = null;
-      resultsContainer.innerHTML = '<div class="text-center text-light-gray font-mono py-10 opacity-50">AWAITING INPUT...</div>';
+      resultsContainer.innerHTML = '<div class="text-center text-light-gray font-mono py-10 opacity-50 flex flex-col items-center justify-center h-full"><span>AWAITING INPUT...</span></div>';
       apiStatus.textContent = 'READY';
       apiStatus.className   = 'text-neon-green font-bold';
       return;
@@ -598,6 +658,16 @@
 
     resultsContainer.innerHTML = html || '<div class="text-center text-light-gray font-mono py-10 opacity-50">No results found for this selection.</div>';
     attachDynamicListeners();
+
+    // Visual feedback: Flash effect
+    resultsContainer.classList.remove('update-flash');
+    void resultsContainer.offsetWidth; // Trigger reflow
+    resultsContainer.classList.add('update-flash');
+
+    // Auto-scroll to Output Panel if on mobile, so the user doesn't miss it
+    if (window.innerWidth < 1024) {
+      document.getElementById('outputPanel')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }
 
   // ── Dynamic Listeners ───────────────────────────────────────────────────────
@@ -738,6 +808,57 @@
 
   sourceText.addEventListener('input', onInput);
   secretKey.addEventListener('input', onInput);
+
+  // ── Share Modals ────────────────────────────────────────────────────────────
+  const openShareModalBtn = document.getElementById('openShareModalBtn');
+  const infoShareBtn      = document.getElementById('infoShareBtn');
+  const infoModal         = document.getElementById('infoModal');
+  const closeInfoBtn      = document.getElementById('closeInfoBtn');
+  const shareModal        = document.getElementById('shareModal');
+  const closeShareBtn     = document.getElementById('closeShareBtn');
+  const confirmShareBtn   = document.getElementById('confirmShareBtn');
+  const shareResult       = document.getElementById('shareResult');
+  const shareLinkAnchor   = document.getElementById('shareLinkAnchor') as HTMLAnchorElement;
+
+  infoShareBtn?.addEventListener('click', () => infoModal?.classList.remove('hidden'));
+  closeInfoBtn?.addEventListener('click', () => infoModal?.classList.add('hidden'));
+  
+  openShareModalBtn?.addEventListener('click', () => {
+    if (!generatedKeyOut.value || generatedKeyOut.value.startsWith('Error')) {
+      alert("Please generate a valid key first!");
+      return;
+    }
+    shareResult?.classList.add('hidden');
+    confirmShareBtn!.textContent = 'I UNDERSTAND, GENERATE LINK';
+    confirmShareBtn!.disabled = false;
+    shareModal?.classList.remove('hidden');
+  });
+  
+  closeShareBtn?.addEventListener('click', () => shareModal?.classList.add('hidden'));
+
+  confirmShareBtn?.addEventListener('click', async () => {
+    confirmShareBtn.disabled = true;
+    confirmShareBtn.textContent = 'GENERATING...';
+    try {
+      const res = await fetch('/api/share', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: generatedKeyOut.value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Failed');
+      
+      const link = window.location.origin + '/share/' + data.uuid;
+      shareLinkAnchor!.href = link;
+      shareLinkAnchor!.textContent = link;
+      shareResult?.classList.remove('hidden');
+      confirmShareBtn.textContent = 'LINK GENERATED';
+    } catch (e) {
+      confirmShareBtn.textContent = 'FAILED';
+    }
+  });
+
+  processData();
 </script>
 
 <style>
@@ -754,4 +875,14 @@
   }
   .accordion-wrapper.open { grid-template-rows: 1fr; }
   .accordion-inner { overflow: hidden; }
+
+  @keyframes flashUpdate {
+    0% { background-color: rgba(57, 255, 20, 0.1); box-shadow: 0 0 20px rgba(57, 255, 20, 0.2); }
+    100% { background-color: transparent; box-shadow: none; }
+  }
+  .update-flash {
+    animation: flashUpdate 0.8s ease-out;
+    border-radius: 4px;
+  }
+
 </style>

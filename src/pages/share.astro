@@ -1,0 +1,114 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="CryptoWeb - Secure Key Retrieval">
+  <main class="min-h-screen bg-black-bg text-pure-white flex items-center justify-center p-4 sm:p-8 font-sans relative">
+    
+    <!-- Background Accents -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-green/0 via-neon-green to-neon-green/0 opacity-50"></div>
+    <div class="fixed bottom-0 right-0 w-1/3 h-1/3 bg-neon-green rounded-full blur-[150px] opacity-[0.03] pointer-events-none"></div>
+
+    <div class="w-full max-w-2xl bg-black-bg/80 border border-dark-gray p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] backdrop-blur-sm z-10 tech-panel">
+      
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-12 h-12 flex items-center justify-center border border-neon-green text-neon-green bg-neon-green/10">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="square" stroke-linejoin="miter" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7a4 4 0 00-8 0v4h8z"></path></svg>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-widest text-pure-white uppercase">One-Time Secret</h1>
+          <p class="text-xs font-mono text-light-gray mt-1">Self-destructing message retrieval</p>
+        </div>
+      </div>
+
+      <div id="loadingState" class="py-12 flex flex-col items-center justify-center">
+        <div class="w-8 h-8 border-2 border-neon-green border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p class="text-sm font-mono text-neon-green animate-pulse">DECRYPTING AND DESTROYING LINK...</p>
+      </div>
+
+      <div id="errorState" class="hidden py-8 border border-red-500/30 bg-red-500/10 p-6">
+        <h2 class="text-red-500 font-bold tracking-widest uppercase mb-2">Retrieval Failed</h2>
+        <p id="errorMsg" class="font-mono text-sm text-light-gray">This link has already been used, expired, or never existed.</p>
+        <a href="/" class="inline-block mt-6 px-6 py-2 border border-dark-gray text-xs font-bold tracking-widest text-light-gray hover:text-pure-white hover:border-pure-white transition-colors">RETURN HOME</a>
+      </div>
+
+      <div id="successState" class="hidden">
+        <div class="bg-red-500/10 border border-red-500/30 p-4 mb-6">
+          <p class="text-red-500 font-mono text-xs flex items-center gap-2">
+            <span class="font-bold">⚠ WARNING:</span> This secret has now been destroyed from the server. If you refresh this page, it will be gone forever.
+          </p>
+        </div>
+
+        <label class="text-xs font-bold tracking-widest text-light-gray uppercase block mb-2">Retrieved Secret Data</label>
+        <div class="relative group overflow-hidden">
+          <textarea id="secretData" readonly class="tech-input w-full min-h-[150px] font-mono text-sm text-neon-green resize-y p-4 bg-black-bg/50 blur-md select-none transition-all duration-300"></textarea>
+          
+          <div id="spoilerOverlay" class="absolute inset-0 flex items-center justify-center bg-black-bg/40 cursor-pointer z-10 hover:bg-black-bg/20 transition-all">
+             <span class="border border-neon-green bg-black-bg px-6 py-2 text-neon-green font-bold tracking-widest text-sm shadow-[0_0_15px_rgba(57,255,20,0.3)]">CLICK TO REVEAL</span>
+          </div>
+
+          <button id="copyBtn" class="hidden absolute top-2 right-2 text-xs font-bold px-4 py-1.5 border border-dark-gray bg-black-bg text-light-gray hover:border-neon-green hover:text-neon-green transition-all z-20">COPY</button>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-dark-gray text-center">
+           <a href="/" class="inline-block px-8 py-3 border border-neon-green text-xs font-bold tracking-widest text-neon-green hover:bg-neon-green/10 transition-colors">GO TO DASHBOARD</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const uuid = window.location.pathname.split('/').pop();
+  
+  const loadingState = document.getElementById('loadingState');
+  const errorState   = document.getElementById('errorState');
+  const successState = document.getElementById('successState');
+  const errorMsg     = document.getElementById('errorMsg');
+  const secretData   = document.getElementById('secretData') as HTMLTextAreaElement;
+  const copyBtn      = document.getElementById('copyBtn');
+  const spoilerOverlay = document.getElementById('spoilerOverlay');
+
+  spoilerOverlay?.addEventListener('click', () => {
+    spoilerOverlay.classList.add('hidden');
+    secretData.classList.remove('blur-md', 'select-none');
+    copyBtn?.classList.remove('hidden');
+  });
+
+  async function fetchSecret() {
+    try {
+      const response = await fetch(`/api/share/${uuid}`);
+      const data = await response.json();
+      
+      loadingState.classList.add('hidden');
+      
+      if (!response.ok) {
+        errorState.classList.remove('hidden');
+        if (data.detail) errorMsg.textContent = data.detail;
+        return;
+      }
+      
+      successState.classList.remove('hidden');
+      secretData.value = data.secret;
+    } catch (e) {
+      loadingState.classList.add('hidden');
+      errorState.classList.remove('hidden');
+      errorMsg.textContent = "Network error. Could not connect to server.";
+    }
+  }
+
+  fetchSecret();
+
+  copyBtn?.addEventListener('click', () => {
+    navigator.clipboard.writeText(secretData.value).then(() => {
+      const orig = copyBtn.innerText;
+      copyBtn.innerText = 'COPIED!';
+      copyBtn.classList.add('border-neon-green', 'text-neon-green');
+      setTimeout(() => {
+        copyBtn.innerText = orig;
+        copyBtn.classList.remove('border-neon-green', 'text-neon-green');
+      }, 2000);
+    });
+  });
+</script>

@@ -1,4 +1,24 @@
 services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: share_user
+      POSTGRES_PASSWORD: share_password
+      POSTGRES_DB: sharedb
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: always
+
   cryptoweb:
     build: .
     ports:
@@ -13,6 +33,11 @@ services:
       # Set TRUST_PROXY=1 only when a trusted reverse proxy (nginx) is in front.
       # This enables X-Forwarded-For for accurate rate limiting per client IP.
       - TRUST_PROXY=0
+      - DATABASE_URL=postgresql+asyncpg://share_user:share_password@postgres:5432/sharedb
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
     restart: always
     healthcheck:
       # wget is available in alpine; checks that the HTTP server responds
@@ -21,3 +46,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+volumes:
+  postgres_data:
+  redis_data:

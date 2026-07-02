@@ -5,3 +5,7 @@ bcrypt==5.0.0
 PyJWT==2.13.0
 pydantic==2.13.4
 slowapi==0.1.10
+redis
+sqlalchemy
+asyncpg
+greenlet
