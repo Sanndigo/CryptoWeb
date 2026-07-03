@@ -25,16 +25,12 @@ services:
       # Bind only to localhost — expose via nginx for production internet access
       - '127.0.0.1:8100:8100'
     environment:
-      - ENV=production
-      # Set CORS_ORIGINS to your domain(s) in production, e.g.:
-      #   CORS_ORIGINS=https://example.com
-      # Leave unset (or "*") for local-only deployments.
-      - CORS_ORIGINS=
-      # Set TRUST_PROXY=1 only when a trusted reverse proxy (nginx) is in front.
-      # This enables X-Forwarded-For for accurate rate limiting per client IP.
-      - TRUST_PROXY=0
-      - DATABASE_URL=postgresql+asyncpg://share_user:share_password@postgres:5432/sharedb
-      - REDIS_URL=redis://redis:6379/0
+      - ENV=${ENV:-production}
+      - CORS_ORIGINS=${CORS_ORIGINS:-}
+      - TRUST_PROXY=${TRUST_PROXY:-0}
+      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://share_user:share_password@postgres:5432/sharedb}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     depends_on:
       - postgres
       - redis
