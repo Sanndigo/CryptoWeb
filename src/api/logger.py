@@ -3,7 +3,7 @@ from logging.handlers import RotatingFileHandler
 import os
 
 # Create logs directory at the project root
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 LOGS_DIR = os.path.join(PROJECT_ROOT, "logs")
 os.makedirs(LOGS_DIR, exist_ok=True)
 LOG_FILE = os.path.join(LOGS_DIR, "backend.log")
