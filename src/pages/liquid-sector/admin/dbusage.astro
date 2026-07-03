@@ -64,8 +64,12 @@ import Layout from '../../../layouts/Layout.astro';
       if (!data.logs) {
         logOutput!.innerHTML = '<span class="text-light-gray">Log file is empty.</span>';
       } else {
+        const escapeHtml = (unsafe: string) => {
+          return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        };
+        let safeLogs = escapeHtml(data.logs);
         // Colorize log levels for better readability
-        let formattedLogs = data.logs
+        let formattedLogs = safeLogs
           .replace(/\[INFO\]/g, '<span class="text-neon-green font-bold">[INFO]</span>')
           .replace(/\[WARNING\]/g, '<span class="text-yellow-400 font-bold">[WARNING]</span>')
           .replace(/\[ERROR\]/g, '<span class="text-red-500 font-bold">[ERROR]</span>');

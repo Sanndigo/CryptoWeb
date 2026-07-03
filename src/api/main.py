@@ -16,9 +16,18 @@ from contextlib import asynccontextmanager
 import uuid
 import datetime
 import traceback
+import sys
+from uuid import UUID
+
+from dotenv import load_dotenv
+load_dotenv()
 
 from .logger import logger
 
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+if not ADMIN_PASSWORD:
+    print("FATAL ERROR: ADMIN_PASSWORD must be set in the environment.", file=sys.stderr)
+    sys.exit(1)
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 # When running behind a reverse proxy (nginx), set TRUST_PROXY=1 so that
@@ -57,12 +66,16 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-# Override via CORS_ORIGINS env var for production, e.g.:
-#   CORS_ORIGINS=https://example.com,https://www.example.com
-# Defaults to "*" for local development convenience only.
-
+ENV = os.getenv("ENV", "development")
 _cors_env = os.getenv("CORS_ORIGINS", "")
-_cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()] or ["*"]
+
+if ENV == "production":
+    if not _cors_env:
+        print("FATAL ERROR: CORS_ORIGINS must be set in production environment.", file=sys.stderr)
+        sys.exit(1)
+    _cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()]
+else:
+    _cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip()] or ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -187,18 +200,19 @@ async def create_share(request: Request, payload: ShareCreate, db: AsyncSession 
 
 @app.get("/api/share/{share_id}", response_model=ShareGet)
 @limiter.limit("30/minute")
-async def get_share(request: Request, share_id: str, db: AsyncSession = Depends(get_db)):
-    secret = await redis_client.getdel(f"share:{share_id}")
+async def get_share(request: Request, share_id: UUID, db: AsyncSession = Depends(get_db)):
+    share_id_str = str(share_id)
+    secret = await redis_client.getdel(f"share:{share_id_str}")
     if not secret:
-        logger.warning(f"Share link not found or already burned: {share_id} accessed by {_get_client_ip(request)}")
+        logger.warning(f"Share link not found or already burned: {share_id_str} accessed by {_get_client_ip(request)}")
         raise HTTPException(status_code=404, detail="Link expired or already used.")
         
-    audit = await db.get(ShareAuditLog, share_id)
+    audit = await db.get(ShareAuditLog, share_id_str)
     if audit:
         audit.accessed_at = datetime.datetime.now(datetime.timezone.utc)
         await db.commit()
         
-    logger.info(f"Share link accessed and burned: {share_id} by {_get_client_ip(request)}")
+    logger.info(f"Share link accessed and burned: {share_id_str} by {_get_client_ip(request)}")
     return ShareGet(secret=secret)
 
 
@@ -207,7 +221,7 @@ async def get_share(request: Request, share_id: str, db: AsyncSession = Depends(
 @app.get("/api/liquid-sector/admin/logs")
 @limiter.limit("10/minute")
 def get_admin_logs(request: Request, password: str = ""):
-    if password != os.getenv("ADMIN_PASSWORD", "admin"):
+    if password != ADMIN_PASSWORD:
         logger.warning(f"Failed admin login attempt from {_get_client_ip(request)}")
         raise HTTPException(status_code=401, detail="Unauthorized")
     
@@ -227,7 +241,7 @@ def get_admin_logs(request: Request, password: str = ""):
 @app.delete("/api/liquid-sector/admin/logs")
 @limiter.limit("5/minute")
 def clear_admin_logs(request: Request, password: str = ""):
-    if password != os.getenv("ADMIN_PASSWORD", "admin"):
+    if password != ADMIN_PASSWORD:
         logger.warning(f"Failed admin log purge attempt from {_get_client_ip(request)}")
         raise HTTPException(status_code=401, detail="Unauthorized")
         
