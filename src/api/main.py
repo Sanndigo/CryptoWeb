@@ -17,6 +17,7 @@ import uuid
 import datetime
 import traceback
 import sys
+import re
 from uuid import UUID
 
 from dotenv import load_dotenv
@@ -24,9 +25,10 @@ load_dotenv()
 
 from .logger import logger
 
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-if not ADMIN_PASSWORD:
-    print("FATAL ERROR: ADMIN_PASSWORD must be set in the environment.", file=sys.stderr)
+if not ADMIN_USERNAME or not ADMIN_PASSWORD:
+    print("FATAL ERROR: ADMIN_USERNAME and ADMIN_PASSWORD must be set in the environment.", file=sys.stderr)
     sys.exit(1)
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
@@ -218,30 +220,54 @@ async def get_share(request: Request, share_id: UUID, db: AsyncSession = Depends
 
 # ── Admin endpoints ───────────────────────────────────────────────────────────
 
+from fastapi import Header
 @app.get("/api/liquid-sector/admin/logs")
 @limiter.limit("10/minute")
-def get_admin_logs(request: Request, password: str = ""):
-    if password != ADMIN_PASSWORD:
+def get_admin_logs(request: Request, x_admin_user: str = Header(default=""), x_admin_pass: str = Header(default="")):
+    username = x_admin_user
+    password = x_admin_pass
+    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
         logger.warning(f"Failed admin login attempt from {_get_client_ip(request)}")
         raise HTTPException(status_code=401, detail="Unauthorized")
     
     from .logger import LOG_FILE
     if not os.path.exists(LOG_FILE):
-        return {"logs": ""}
+        return {"logs": []}
         
+    log_entries = []
+    current_entry = None
     try:
         with open(LOG_FILE, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            # Return up to 1000 lines
-            return {"logs": "".join(lines[-1000:])}
+            lines = f.readlines()[-2000:]
+            for line in lines:
+                match = re.match(r"^\[(.*?)\] \[(.*?)\] \[(.*?)\] (.*)", line)
+                if match:
+                    if current_entry:
+                        log_entries.append(current_entry)
+                    current_entry = {
+                        "timestamp": match.group(1),
+                        "level": match.group(2),
+                        "name": match.group(3),
+                        "message": match.group(4)
+                    }
+                else:
+                    if current_entry:
+                        current_entry["message"] += "\n" + line.rstrip()
+            if current_entry:
+                log_entries.append(current_entry)
+        
+        # Return reversed (newest first) up to 1000 items
+        return {"logs": log_entries[::-1][:1000]}
     except Exception as e:
         logger.error(f"Error reading logs: {e}")
-        return {"logs": "Error reading logs."}
+        return {"logs": []}
 
 @app.delete("/api/liquid-sector/admin/logs")
 @limiter.limit("5/minute")
-def clear_admin_logs(request: Request, password: str = ""):
-    if password != ADMIN_PASSWORD:
+def clear_admin_logs(request: Request, x_admin_user: str = Header(default=""), x_admin_pass: str = Header(default="")):
+    username = x_admin_user
+    password = x_admin_pass
+    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
         logger.warning(f"Failed admin log purge attempt from {_get_client_ip(request)}")
         raise HTTPException(status_code=401, detail="Unauthorized")
         

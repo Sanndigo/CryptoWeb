@@ -3,106 +3,301 @@ import Layout from '../../../layouts/Layout.astro';
 ---
 
 <Layout title="CryptoWeb - Admin Console">
-  <main class="min-h-screen bg-black-bg text-pure-white p-4 sm:p-8 font-sans flex flex-col relative">
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" is:inline></script>
+
+  <main class="min-h-screen bg-black-bg text-pure-white p-4 sm:p-8 font-sans flex flex-col relative overflow-hidden">
     
     <!-- Background Accents -->
     <div class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500/0 via-red-500 to-red-500/0 opacity-50"></div>
-    
-    <div class="w-full max-w-6xl mx-auto flex-1 flex flex-col">
-      <div class="flex items-center justify-between mb-6 border-b border-dark-gray pb-4">
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="absolute inset-0 z-50 bg-black-bg/95 flex items-center justify-center backdrop-blur-sm">
+      <div class="border border-dark-gray bg-black-bg p-8 w-96 flex flex-col gap-4 shadow-[0_0_30px_rgba(255,0,0,0.1)]">
+        <h2 class="text-xl font-bold tracking-widest text-pure-white mb-2 flex items-center gap-3">
+          <span class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+          AUTH REQUIRED
+        </h2>
+        <input type="text" id="adminUser" placeholder="Username" class="tech-input h-10 px-4 font-mono text-xs focus:outline-none" />
+        <input type="password" id="adminPass" placeholder="Password" class="tech-input h-10 px-4 font-mono text-xs focus:outline-none" />
+        <button id="loginBtn" class="h-10 border border-neon-green text-neon-green text-xs font-bold tracking-widest hover:bg-neon-green/10 transition-all mt-2 active:scale-95">
+          AUTHORIZE
+        </button>
+        <div id="authError" class="text-red-500 text-xs text-center hidden">Invalid credentials or server error.</div>
+      </div>
+    </div>
+
+    <!-- Dashboard (Hidden initially) -->
+    <div id="dashboard" class="w-full max-w-7xl mx-auto flex-1 flex flex-col hidden opacity-0 transition-opacity duration-500 h-full">
+      <div class="flex items-center justify-between mb-6 border-b border-dark-gray pb-4 shrink-0">
         <div>
           <h1 class="text-2xl font-bold tracking-widest text-pure-white uppercase flex items-center gap-3">
-            <span class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-            SYSTEM ADMIN CONSOLE
+            <span class="w-3 h-3 bg-neon-green rounded-full shadow-[0_0_10px_#00ff00]"></span>
+            SYSTEM DASHBOARD
           </h1>
-          <p class="text-xs font-mono text-light-gray mt-1">Live server event streaming & monitoring</p>
+          <p class="text-xs font-mono text-light-gray mt-1">Live metrics and structured event logs</p>
         </div>
-        <a href="/" class="text-xs font-bold px-4 py-2 border border-dark-gray text-light-gray hover:border-neon-green hover:text-neon-green transition-all">EXIT TO APP</a>
+        <div class="flex gap-4">
+          <button id="refreshBtn" class="text-xs font-bold px-4 py-2 border border-neon-green text-neon-green hover:bg-neon-green/10 transition-all active:scale-95">REFRESH</button>
+          <button id="purgeBtn" class="text-xs font-bold px-4 py-2 border border-red-500 text-red-500 hover:bg-red-500/10 transition-all active:scale-95">PURGE LOGS</button>
+          <a href="/" class="text-xs font-bold px-4 py-2 border border-dark-gray text-light-gray hover:border-dark-gray hover:text-white transition-all">EXIT</a>
+        </div>
       </div>
 
-      <div class="flex gap-4 mb-4 items-center">
-        <input type="password" id="adminPass" placeholder="Enter Admin Password..." 
-               class="tech-input h-10 px-4 font-mono text-xs w-64 focus:outline-none" />
-        <button id="fetchLogsBtn" class="h-10 px-6 border border-neon-green text-neon-green text-xs font-bold tracking-widest hover:bg-neon-green/10 transition-all active:scale-95">
-          FETCH LOGS
-        </button>
-        <button id="clearLogsBtn" class="h-10 px-6 border border-red-500 text-red-500 text-xs font-bold tracking-widest hover:bg-red-500/10 transition-all active:scale-95 ml-auto">
-          PURGE LOGS
-        </button>
+      <!-- Chart Section -->
+      <div class="mb-6 h-48 border border-dark-gray bg-white/5 p-4 shrink-0 relative">
+        <canvas id="apiChart"></canvas>
       </div>
 
-      <div id="logContainer" class="flex-1 bg-black-bg/80 border border-dark-gray p-4 font-mono text-[11px] sm:text-xs text-light-gray overflow-y-auto relative h-[60vh] shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]">
-        <div id="loadingOverlay" class="hidden absolute inset-0 bg-black-bg/80 flex items-center justify-center">
-          <p class="text-neon-green animate-pulse">CONNECTING TO SECURE SERVER...</p>
+      <!-- Filters Section -->
+      <div class="flex flex-wrap gap-6 mb-4 items-center bg-white/5 p-4 border border-dark-gray shrink-0 rounded">
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] text-light-gray tracking-widest font-bold">LOG TYPE</span>
+          <div class="flex gap-3">
+            <label class="flex items-center gap-1 text-xs text-neon-green cursor-pointer"><input type="checkbox" id="cbInfo" checked class="accent-neon-green" /> INFO</label>
+            <label class="flex items-center gap-1 text-xs text-yellow-400 cursor-pointer"><input type="checkbox" id="cbWarn" checked class="accent-yellow-400" /> WARN</label>
+            <label class="flex items-center gap-1 text-xs text-red-500 cursor-pointer"><input type="checkbox" id="cbErr" checked class="accent-red-500" /> ERROR</label>
+          </div>
         </div>
-        <pre id="logOutput" class="whitespace-pre-wrap break-all">Awaiting authentication...</pre>
+        <div class="w-px h-8 bg-dark-gray mx-2"></div>
+        <div class="flex flex-col gap-2">
+          <span class="text-[10px] text-light-gray tracking-widest font-bold">HTTP CODES</span>
+          <div class="flex gap-3">
+            <label class="flex items-center gap-1 text-xs text-blue-400 cursor-pointer"><input type="checkbox" id="cb2xx" checked class="accent-blue-400" /> 2xx</label>
+            <label class="flex items-center gap-1 text-xs text-purple-400 cursor-pointer"><input type="checkbox" id="cb3xx" checked class="accent-purple-400" /> 3xx</label>
+            <label class="flex items-center gap-1 text-xs text-orange-400 cursor-pointer"><input type="checkbox" id="cb4xx" checked class="accent-orange-400" /> 4xx</label>
+            <label class="flex items-center gap-1 text-xs text-red-500 cursor-pointer"><input type="checkbox" id="cb5xx" checked class="accent-red-500" /> 5xx</label>
+            <label class="flex items-center gap-1 text-xs text-light-gray cursor-pointer"><input type="checkbox" id="cbNone" checked class="accent-gray-500" /> NON-HTTP</label>
+          </div>
+        </div>
+        <div class="w-px h-8 bg-dark-gray mx-2"></div>
+        <div class="flex flex-col gap-2 ml-auto">
+          <span class="text-[10px] text-light-gray tracking-widest font-bold">SORT BY TIME</span>
+          <select id="timeSort" class="bg-black-bg border border-dark-gray text-xs text-pure-white px-2 py-1 outline-none">
+            <option value="desc">Newest First</option>
+            <option value="asc">Oldest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Logs Section -->
+      <div class="flex-1 border border-dark-gray bg-black-bg/80 p-4 font-mono text-[11px] sm:text-xs overflow-y-auto relative shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]" id="logContainer">
+        <div id="loadingOverlay" class="hidden absolute inset-0 bg-black-bg/80 flex items-center justify-center z-10">
+          <p class="text-neon-green animate-pulse">FETCHING LOGS...</p>
+        </div>
+        <div id="logOutput" class="flex flex-col gap-2"></div>
       </div>
     </div>
   </main>
 </Layout>
 
 <script>
-  const adminPass    = document.getElementById('adminPass') as HTMLInputElement;
-  const fetchLogsBtn = document.getElementById('fetchLogsBtn');
-  const clearLogsBtn = document.getElementById('clearLogsBtn');
-  const logOutput    = document.getElementById('logOutput');
-  const logContainer = document.getElementById('logContainer');
+  let sessionUser = '';
+  let sessionPass = '';
+  let allLogs: any[] = [];
+  let chartInstance: any = null;
+
+  const authModal = document.getElementById('authModal');
+  const dashboard = document.getElementById('dashboard');
+  const loginBtn = document.getElementById('loginBtn');
+  const authError = document.getElementById('authError');
+  const userInp = document.getElementById('adminUser') as HTMLInputElement;
+  const passInp = document.getElementById('adminPass') as HTMLInputElement;
+  
+  const refreshBtn = document.getElementById('refreshBtn');
+  const purgeBtn = document.getElementById('purgeBtn');
+  const logOutput = document.getElementById('logOutput');
   const loadingOverlay = document.getElementById('loadingOverlay');
 
-  async function fetchLogs() {
-    if (!adminPass.value) {
-      logOutput!.innerHTML = '<span class="text-red-500">Error: Password required.</span>';
+  const escapeHtml = (unsafe: string) => unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  function parseHttpCode(log: any) {
+    if (log.name === 'uvicorn.access') {
+      const match = log.message.match(/HTTP\/1\.[01]" (\d{3})/);
+      if (match) return parseInt(match[1], 10);
+    }
+    return null;
+  }
+
+  function updateChart(logs: any[]) {
+    // Group requests over time (by minute)
+    const timeMap: Record<string, number> = {};
+    logs.forEach(l => {
+      if (!l.timestamp) return;
+      const key = l.timestamp.substring(0, 16); // Extract up to YYYY-MM-DD HH:MM
+      timeMap[key] = (timeMap[key] || 0) + 1;
+    });
+
+    const labels = Object.keys(timeMap).sort();
+    const data = labels.map(lbl => timeMap[lbl]);
+
+    const ctx = document.getElementById('apiChart') as HTMLCanvasElement;
+    if (chartInstance) chartInstance.destroy();
+
+    // @ts-ignore
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Requests (per min)',
+          data: data,
+          borderColor: '#00ff00',
+          backgroundColor: 'rgba(0, 255, 0, 0.1)',
+          borderWidth: 1,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 2,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { ticks: { color: '#888', maxTicksLimit: 10 }, grid: { color: '#333' } },
+          y: { ticks: { color: '#888', stepSize: 1 }, grid: { color: '#333' }, beginAtZero: true }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: { mode: 'index', intersect: false }
+        }
+      }
+    });
+  }
+
+  function renderLogs() {
+    const showInfo = (document.getElementById('cbInfo') as HTMLInputElement).checked;
+    const showWarn = (document.getElementById('cbWarn') as HTMLInputElement).checked;
+    const showErr = (document.getElementById('cbErr') as HTMLInputElement).checked;
+    const s2xx = (document.getElementById('cb2xx') as HTMLInputElement).checked;
+    const s3xx = (document.getElementById('cb3xx') as HTMLInputElement).checked;
+    const s4xx = (document.getElementById('cb4xx') as HTMLInputElement).checked;
+    const s5xx = (document.getElementById('cb5xx') as HTMLInputElement).checked;
+    const sNone = (document.getElementById('cbNone') as HTMLInputElement).checked;
+    
+    const sortDesc = (document.getElementById('timeSort') as HTMLSelectElement).value === 'desc';
+
+    let filtered = allLogs.filter((log: any) => {
+      if (log.level === 'INFO' && !showInfo) return false;
+      if (log.level === 'WARNING' && !showWarn) return false;
+      if (log.level === 'ERROR' && !showErr) return false;
+
+      const code = parseHttpCode(log);
+      if (code !== null) {
+        if (code >= 200 && code < 300 && !s2xx) return false;
+        if (code >= 300 && code < 400 && !s3xx) return false;
+        if (code >= 400 && code < 500 && !s4xx) return false;
+        if (code >= 500 && !s5xx) return false;
+      } else {
+        if (!sNone) return false;
+      }
+      return true;
+    });
+
+    if (!sortDesc) {
+      filtered = [...filtered].reverse(); 
+    }
+
+    if (filtered.length === 0) {
+      logOutput!.innerHTML = '<span class="text-light-gray opacity-50 text-center block mt-10">No logs match the selected filters or log is empty.</span>';
       return;
     }
-    
+
+    logOutput!.innerHTML = filtered.map((log: any) => {
+      let colorClass = 'text-neon-green';
+      let borderClass = 'border-neon-green/20';
+      if (log.level === 'WARNING') { colorClass = 'text-yellow-400'; borderClass = 'border-yellow-400/20'; }
+      if (log.level === 'ERROR') { colorClass = 'text-red-500'; borderClass = 'border-red-500/20'; }
+      
+      const code = parseHttpCode(log);
+      let codeBadge = '';
+      if (code) {
+        let bg = 'bg-blue-500/20 text-blue-400';
+        if (code >= 300) bg = 'bg-purple-500/20 text-purple-400';
+        if (code >= 400) bg = 'bg-orange-500/20 text-orange-400';
+        if (code >= 500) bg = 'bg-red-500/20 text-red-500';
+        codeBadge = `<span class="px-2 py-0.5 ${bg} rounded text-[10px] ml-2 border border-current">HTTP ${code}</span>`;
+      }
+
+      return `
+        <div class="border ${borderClass} bg-white/5 p-3 hover:bg-white/10 transition-colors flex flex-col sm:flex-row gap-2 sm:gap-4 break-words">
+          <div class="flex flex-col sm:w-56 shrink-0">
+            <span class="text-light-gray opacity-50 text-[10px]">${escapeHtml(log.timestamp || '')}</span>
+            <div class="flex items-center mt-1">
+              <span class="font-bold tracking-widest ${colorClass} text-xs">[${escapeHtml(log.level)}]</span>
+              ${codeBadge}
+            </div>
+          </div>
+          <div class="flex-1 min-w-0">
+            <span class="text-light-gray opacity-50 block mb-1 text-[10px] uppercase tracking-widest">[${escapeHtml(log.name)}]</span>
+            <div class="text-pure-white whitespace-pre-wrap font-mono leading-relaxed">${escapeHtml(log.message)}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function loadData() {
     loadingOverlay?.classList.remove('hidden');
     try {
-      const res = await fetch(`/api/liquid-sector/admin/logs?password=${encodeURIComponent(adminPass.value)}`);
-      if (!res.ok) throw new Error(res.status === 401 ? 'Unauthorized Access' : 'Server Error');
+      const res = await fetch(`/api/liquid-sector/admin/logs`, {
+        headers: {
+          'X-Admin-User': sessionUser,
+          'X-Admin-Pass': sessionPass
+        }
+      });
+      if (!res.ok) throw new Error('Auth failed');
+      
       const data = await res.json();
+      allLogs = data.logs || [];
       
-      if (!data.logs) {
-        logOutput!.innerHTML = '<span class="text-light-gray">Log file is empty.</span>';
-      } else {
-        const escapeHtml = (unsafe: string) => {
-          return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        };
-        let safeLogs = escapeHtml(data.logs);
-        // Colorize log levels for better readability
-        let formattedLogs = safeLogs
-          .replace(/\[INFO\]/g, '<span class="text-neon-green font-bold">[INFO]</span>')
-          .replace(/\[WARNING\]/g, '<span class="text-yellow-400 font-bold">[WARNING]</span>')
-          .replace(/\[ERROR\]/g, '<span class="text-red-500 font-bold">[ERROR]</span>');
-        logOutput!.innerHTML = formattedLogs;
-      }
+      updateChart(allLogs);
+      renderLogs();
       
-      // Auto-scroll to bottom
-      logContainer!.scrollTop = logContainer!.scrollHeight;
-    } catch (e: any) {
-      logOutput!.innerHTML = `<span class="text-red-500">Error: ${e.message}</span>`;
+      // Hide auth modal and smoothly show dashboard
+      authModal?.classList.add('hidden');
+      dashboard?.classList.remove('hidden');
+      // small delay to allow display:block to apply before animating opacity
+      setTimeout(() => dashboard?.classList.remove('opacity-0'), 50);
+      authError?.classList.add('hidden');
+      
+    } catch (e) {
+      authError?.classList.remove('hidden');
+      sessionUser = '';
+      sessionPass = '';
     } finally {
       loadingOverlay?.classList.add('hidden');
     }
   }
 
-  async function clearLogs() {
-    if (!adminPass.value) return;
-    if (!confirm('Are you sure you want to permanently delete all server logs?')) return;
-    
-    try {
-      const res = await fetch(`/api/liquid-sector/admin/logs?password=${encodeURIComponent(adminPass.value)}`, {
-        method: 'DELETE'
-      });
-      if (!res.ok) throw new Error(res.status === 401 ? 'Unauthorized Access' : 'Server Error');
-      logOutput!.innerHTML = '<span class="text-neon-green">Logs purged successfully.</span>';
-    } catch (e: any) {
-      logOutput!.innerHTML = `<span class="text-red-500">Error: ${e.message}</span>`;
-    }
-  }
+  loginBtn?.addEventListener('click', () => {
+    sessionUser = userInp.value;
+    sessionPass = passInp.value;
+    loadData();
+  });
 
-  fetchLogsBtn?.addEventListener('click', fetchLogs);
-  clearLogsBtn?.addEventListener('click', clearLogs);
-  adminPass?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') fetchLogs();
+  refreshBtn?.addEventListener('click', loadData);
+
+  purgeBtn?.addEventListener('click', async () => {
+    if (!confirm('Permanently delete all logs?')) return;
+    try {
+      await fetch(`/api/liquid-sector/admin/logs`, {
+        method: 'DELETE',
+        headers: {
+          'X-Admin-User': sessionUser,
+          'X-Admin-Pass': sessionPass
+        }
+      });
+      loadData();
+    } catch(e) {}
+  });
+
+  [userInp, passInp].forEach(el => el?.addEventListener('keypress', e => {
+    if (e.key === 'Enter') loginBtn?.click();
+  }));
+
+  ['cbInfo', 'cbWarn', 'cbErr', 'cb2xx', 'cb3xx', 'cb4xx', 'cb5xx', 'cbNone', 'timeSort'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', renderLogs);
   });
 </script>

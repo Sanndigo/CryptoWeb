@@ -1,0 +1,40 @@
+[2026-07-03 15:43:33] [INFO] [cryptoweb] Logs purged by admin from 127.0.0.1
+[2026-07-03 15:43:33] [INFO] [uvicorn.access] 127.0.0.1:53394 - "DELETE /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:43:34] [INFO] [uvicorn.access] 127.0.0.1:53394 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:43:35] [INFO] [uvicorn.access] 127.0.0.1:53394 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:43:36] [INFO] [uvicorn.access] 127.0.0.1:53394 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:43:36] [INFO] [uvicorn.access] 127.0.0.1:53394 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:43:37] [INFO] [uvicorn.access] 127.0.0.1:53394 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:47:24] [INFO] [uvicorn.error] Started server process [3848]
+[2026-07-03 15:47:24] [INFO] [uvicorn.error] Waiting for application startup.
+[2026-07-03 15:47:24] [INFO] [cryptoweb] Starting up: initializing DB and caching layers.
+[2026-07-03 15:47:25] [INFO] [uvicorn.error] Application startup complete.
+[2026-07-03 15:47:25] [ERROR] [uvicorn.error] [Errno 48] error while attempting to bind on address ('127.0.0.1', 8100): [errno 48] address already in use
+[2026-07-03 15:47:25] [INFO] [uvicorn.error] Waiting for application shutdown.
+[2026-07-03 15:47:25] [INFO] [cryptoweb] Shutting down: closing Redis connection.
+[2026-07-03 15:47:25] [INFO] [uvicorn.error] Application shutdown complete.
+[2026-07-03 15:47:34] [INFO] [uvicorn.access] 127.0.0.1:53464 - "GET /liquid-sector/admin/dbusage HTTP/1.1" 200
+[2026-07-03 15:47:34] [INFO] [uvicorn.access] 127.0.0.1:53464 - "GET /_astro/Layout.Yj5uN3PF.css HTTP/1.1" 200
+[2026-07-03 15:47:34] [INFO] [uvicorn.access] 127.0.0.1:53467 - "GET /_astro/dbusage.astro_astro_type_script_index_0_lang.DuUK5uQ-.js HTTP/1.1" 200
+[2026-07-03 15:47:42] [WARNING] [cryptoweb] Failed admin login attempt from 127.0.0.1
+[2026-07-03 15:47:42] [INFO] [uvicorn.access] 127.0.0.1:53473 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123%20 HTTP/1.1" 401
+[2026-07-03 15:47:54] [INFO] [uvicorn.error] Started server process [3901]
+[2026-07-03 15:47:54] [INFO] [uvicorn.error] Waiting for application startup.
+[2026-07-03 15:47:54] [INFO] [cryptoweb] Starting up: initializing DB and caching layers.
+[2026-07-03 15:47:54] [INFO] [uvicorn.error] Application startup complete.
+[2026-07-03 15:47:54] [INFO] [uvicorn.error] Uvicorn running on http://127.0.0.1:8100 (Press CTRL+C to quit)
+[2026-07-03 15:48:20] [INFO] [uvicorn.access] 127.0.0.1:53554 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:49:08] [INFO] [uvicorn.access] 127.0.0.1:53560 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:50:52] [INFO] [uvicorn.access] 127.0.0.1:53584 - "GET /api/liquid-sector/admin/logs?username=admin&password=strong_admin_password_123 HTTP/1.1" 200
+[2026-07-03 15:52:38] [INFO] [uvicorn.error] Started server process [4047]
+[2026-07-03 15:52:38] [INFO] [uvicorn.error] Waiting for application startup.
+[2026-07-03 15:52:38] [INFO] [cryptoweb] Starting up: initializing DB and caching layers.
+[2026-07-03 15:52:38] [INFO] [uvicorn.error] Application startup complete.
+[2026-07-03 15:52:38] [INFO] [uvicorn.error] Uvicorn running on http://127.0.0.1:8100 (Press CTRL+C to quit)
+[2026-07-03 15:52:48] [INFO] [uvicorn.access] 127.0.0.1:53636 - "GET /liquid-sector/admin/dbusage HTTP/1.1" 200
+[2026-07-03 15:52:48] [INFO] [uvicorn.access] 127.0.0.1:53636 - "GET /_astro/Layout.Yj5uN3PF.css HTTP/1.1" 200
+[2026-07-03 15:52:48] [INFO] [uvicorn.access] 127.0.0.1:53645 - "GET /_astro/dbusage.astro_astro_type_script_index_0_lang.DEVRZ9V0.js HTTP/1.1" 200
+[2026-07-03 15:52:52] [INFO] [uvicorn.access] 127.0.0.1:53636 - "GET /api/liquid-sector/admin/logs HTTP/1.1" 200
+[2026-07-03 15:53:14] [WARNING] [cryptoweb] Failed admin login attempt from 127.0.0.1
+[2026-07-03 15:53:14] [INFO] [uvicorn.access] 127.0.0.1:53651 - "GET /api/liquid-sector/admin/logs HTTP/1.1" 401
+[2026-07-03 15:53:14] [INFO] [uvicorn.access] 127.0.0.1:53652 - "GET /api/liquid-sector/admin/logs HTTP/1.1" 200
