@@ -21,13 +21,15 @@ services:
 
   cryptoweb:
     build: .
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8100 --proxy-headers --forwarded-allow-ips="*"
     ports:
       # Bind only to localhost — expose via nginx for production internet access
       - '127.0.0.1:8100:8100'
     environment:
       - ENV=${ENV:-production}
       - CORS_ORIGINS=${CORS_ORIGINS:-}
-      - TRUST_PROXY=${TRUST_PROXY:-0}
+      # Set TRUST_PROXY=1 to trust X-Forwarded-For headers from Nginx Proxy Manager
+      - TRUST_PROXY=${TRUST_PROXY:-1}
       - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://share_user:share_password@postgres:5432/sharedb}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
