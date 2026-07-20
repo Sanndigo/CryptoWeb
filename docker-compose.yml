@@ -1,16 +1,4 @@
 services:
-  postgres:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: share_user
-      POSTGRES_PASSWORD: share_password
-      POSTGRES_DB: sharedb
-    ports:
-      - "127.0.0.1:5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: always
-
   redis:
     image: redis:7-alpine
     ports:
@@ -47,5 +35,4 @@ services:
       start_period: 40s
 
 volumes:
-  postgres_data:
   redis_data:
