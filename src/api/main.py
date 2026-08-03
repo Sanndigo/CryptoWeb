@@ -10,8 +10,7 @@ from slowapi.errors import RateLimitExceeded
 
 from .models import TextInput, AdvancedOptions, KeyGenRequest, ShareCreate, ShareResponse, ShareGet
 from .services import hashing, encoding, encryption, formatting, keygen
-from .services.db import init_db, get_db, redis_client, ShareAuditLog
-from sqlalchemy.ext.asyncio import AsyncSession
+from .services.db import redis_client
 from contextlib import asynccontextmanager
 import uuid
 import datetime
@@ -23,13 +22,14 @@ from uuid import UUID
 from dotenv import load_dotenv
 load_dotenv()
 
-from .logger import logger
+import logging
 
-ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
-if not ADMIN_USERNAME or not ADMIN_PASSWORD:
-    print("FATAL ERROR: ADMIN_USERNAME and ADMIN_PASSWORD must be set in the environment.", file=sys.stderr)
-    sys.exit(1)
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+logger = logging.getLogger("cryptoweb")
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 # When running behind a reverse proxy (nginx), set TRUST_PROXY=1 so that
@@ -50,8 +50,7 @@ limiter = Limiter(key_func=_get_client_ip)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting up: initializing DB and caching layers.")
-    await init_db()
+    logger.info("Starting up: initializing caching layers.")
     yield
     logger.info("Shutting down: closing Redis connection.")
     await redis_client.aclose()
@@ -186,109 +185,30 @@ def generate_key(request: Request, payload: KeyGenRequest):
 
 @app.post("/api/share", response_model=ShareResponse)
 @limiter.limit("10/minute")
-async def create_share(request: Request, payload: ShareCreate, db: AsyncSession = Depends(get_db)):
+async def create_share(request: Request, payload: ShareCreate):
     share_id = str(uuid.uuid4())
     # Save to Redis with 24h TTL
     await redis_client.setex(f"share:{share_id}", 86400, payload.secret)
     
     expires = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
-    # Audit log
-    audit = ShareAuditLog(id=share_id, expires_at=expires)
-    db.add(audit)
-    await db.commit()
     
     logger.info(f"Share link created: {share_id} by {_get_client_ip(request)}")
     return ShareResponse(uuid=share_id, expires_at=expires.isoformat())
 
 @app.get("/api/share/{share_id}", response_model=ShareGet)
 @limiter.limit("30/minute")
-async def get_share(request: Request, share_id: UUID, db: AsyncSession = Depends(get_db)):
+async def get_share(request: Request, share_id: UUID):
     share_id_str = str(share_id)
     secret = await redis_client.getdel(f"share:{share_id_str}")
     if not secret:
         logger.warning(f"Share link not found or already burned: {share_id_str} accessed by {_get_client_ip(request)}")
         raise HTTPException(status_code=404, detail="Link expired or already used.")
         
-    audit = await db.get(ShareAuditLog, share_id_str)
-    if audit:
-        audit.accessed_at = datetime.datetime.now(datetime.timezone.utc)
-        await db.commit()
-        
     logger.info(f"Share link accessed and burned: {share_id_str} by {_get_client_ip(request)}")
     return ShareGet(secret=secret)
 
 
-# ── Admin endpoints ───────────────────────────────────────────────────────────
-
-from fastapi import Header
-@app.get("/api/liquid-sector/admin/logs")
-@limiter.limit("10/minute")
-def get_admin_logs(request: Request, x_admin_user: str = Header(default=""), x_admin_pass: str = Header(default="")):
-    username = x_admin_user
-    password = x_admin_pass
-    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
-        logger.warning(f"Failed admin login attempt from {_get_client_ip(request)}")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    from .logger import LOG_FILE
-    if not os.path.exists(LOG_FILE):
-        return {"logs": []}
-        
-    log_entries = []
-    current_entry = None
-    try:
-        with open(LOG_FILE, "r", encoding="utf-8") as f:
-            lines = f.readlines()[-2000:]
-            for line in lines:
-                match = re.match(r"^\[(.*?)\] \[(.*?)\] \[(.*?)\] (.*)", line)
-                if match:
-                    if current_entry:
-                        log_entries.append(current_entry)
-                    current_entry = {
-                        "timestamp": match.group(1),
-                        "level": match.group(2),
-                        "name": match.group(3),
-                        "message": match.group(4)
-                    }
-                else:
-                    if current_entry:
-                        current_entry["message"] += "\n" + line.rstrip()
-            if current_entry:
-                log_entries.append(current_entry)
-        
-        # Return reversed (newest first) up to 1000 items
-        return {"logs": log_entries[::-1][:1000]}
-    except Exception as e:
-        logger.error(f"Error reading logs: {e}")
-        return {"logs": []}
-
-@app.delete("/api/liquid-sector/admin/logs")
-@limiter.limit("5/minute")
-def clear_admin_logs(request: Request, x_admin_user: str = Header(default=""), x_admin_pass: str = Header(default="")):
-    username = x_admin_user
-    password = x_admin_pass
-    if username != ADMIN_USERNAME or password != ADMIN_PASSWORD:
-        logger.warning(f"Failed admin log purge attempt from {_get_client_ip(request)}")
-        raise HTTPException(status_code=401, detail="Unauthorized")
-        
-    from .logger import LOG_FILE
-    try:
-        open(LOG_FILE, 'w').close()
-        logger.info(f"Logs purged by admin from {_get_client_ip(request)}")
-        return {"status": "cleared"}
-    except Exception as e:
-        logger.error(f"Error clearing logs: {e}")
-        raise HTTPException(status_code=500, detail="Could not clear logs")
-
-
 # ── HTML page endpoints ───────────────────────────────────────────────────────
-
-@app.get("/liquid-sector/admin/dbusage")
-async def serve_admin_html():
-    html_path = os.path.join(DIST_DIR, "liquid-sector", "admin", "dbusage", "index.html")
-    if not os.path.exists(html_path):
-        return FileResponse(os.path.join(DIST_DIR, "index.html"))
-    return FileResponse(html_path)
 
 @app.get("/share/{share_id}")
 async def serve_share_html(share_id: str):

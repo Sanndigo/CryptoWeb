@@ -18,12 +18,8 @@ services:
       - CORS_ORIGINS=${CORS_ORIGINS:-}
       # Set TRUST_PROXY=1 to trust X-Forwarded-For headers from Nginx Proxy Manager
       - TRUST_PROXY=${TRUST_PROXY:-1}
-      - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://share_user:share_password@postgres:5432/sharedb}
       - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     depends_on:
-      - postgres
       - redis
     restart: always
     healthcheck:
