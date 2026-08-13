@@ -5,7 +5,8 @@ import os
 import functools
 
 # AES-256-GCM (authenticated encryption)
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM, ChaCha20Poly1305
+from cryptography.fernet import Fernet
 
 # TripleDES moved to decrepit in cryptography ≥42; fallback for older versions
 try:
@@ -150,6 +151,62 @@ def decrypt_aes(
     except Exception:
         return "Decryption error or invalid key / AAD"
 
+
+
+# ── ChaCha20-Poly1305 ─────────────────────────────────────────────────────────
+
+_MAGIC_PREFIX_CHACHA = b'CWC1'
+
+def encrypt_chacha(text: str, key: str, output_format: str = "base64") -> str:
+    if not key: return "Key is required for ChaCha20"
+    try:
+        salt = os.urandom(16)
+        key_bytes = _derive_key(key, salt, 256)
+        nonce = os.urandom(12)
+        chacha = ChaCha20Poly1305(key_bytes)
+        ct = chacha.encrypt(nonce, text.encode('utf-8'), None)
+        payload = _MAGIC_PREFIX_CHACHA + salt + nonce + ct
+        return _encode_output(payload, output_format)
+    except Exception:
+        return "Encryption error"
+
+def decrypt_chacha(text: str, key: str, output_format: str = "base64") -> str:
+    if not key: return "Key is required for ChaCha20"
+    try:
+        raw_data = _decode_input(text, output_format)
+        if len(raw_data) >= 48 and raw_data.startswith(_MAGIC_PREFIX_CHACHA):
+            salt = raw_data[4:20]
+            nonce = raw_data[20:32]
+            ct = raw_data[32:]
+            key_bytes = _derive_key(key, salt, 256)
+            chacha = ChaCha20Poly1305(key_bytes)
+            plaintext = chacha.decrypt(nonce, ct, None)
+            return plaintext.decode('utf-8')
+        return "Decryption error: Invalid ciphertext"
+    except Exception:
+        return "Decryption error or invalid key"
+
+# ── Fernet ────────────────────────────────────────────────────────────────────
+
+def encrypt_fernet(text: str, key: str) -> str:
+    if not key: return "Key is required for Fernet"
+    try:
+        key_bytes = _derive_key(key, b'fernet-salt', 256)
+        fkey = base64.urlsafe_b64encode(key_bytes)
+        f = Fernet(fkey)
+        return f.encrypt(text.encode('utf-8')).decode('utf-8')
+    except Exception:
+        return "Encryption error"
+
+def decrypt_fernet(text: str, key: str) -> str:
+    if not key: return "Key is required for Fernet"
+    try:
+        key_bytes = _derive_key(key, b'fernet-salt', 256)
+        fkey = base64.urlsafe_b64encode(key_bytes)
+        f = Fernet(fkey)
+        return f.decrypt(text.encode('utf-8')).decode('utf-8')
+    except Exception:
+        return "Decryption error or invalid key"
 
 # ── 3DES-CBC ──────────────────────────────────────────────────────────────────
 

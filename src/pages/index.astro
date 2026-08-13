@@ -6,130 +6,131 @@ import Layout from '../layouts/Layout.astro';
   title="CryptoWeb - Secure Data Processing, Encryption, and Key Sharing"
   description="CryptoWeb by WebTech60 is a robust online toolkit for developers. Perform MD5, SHA-256 hashing, AES-256 and 3DES encryption, Base64/Hex encoding, and secure one-time key sharing instantly in your browser."
 >
-  <main class="min-h-screen bg-black-bg text-pure-white font-sans flex flex-col relative">
+  <main class="w-full max-w-6xl mx-auto p-4 sm:p-8 flex flex-col gap-16 pb-20 mt-8 relative z-10">
     
-    <!-- Background Accents -->
-    <div class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-green/0 via-neon-green to-neon-green/0 opacity-50"></div>
-    
-    <!-- Navbar -->
-    <nav class="w-full border-b border-dark-gray p-4 flex justify-between items-center bg-black-bg/90 sticky top-0 z-50">
-      <div class="flex items-center gap-3">
-        <div class="w-2 h-2 bg-neon-green rounded-full shadow-[0_0_10px_#39ff14] animate-pulse"></div>
-        <span class="font-bold tracking-widest text-sm">CRYPTOWEB</span>
+    <!-- Hero Section -->
+    <section class="flex flex-col items-center text-center gap-6 py-12 md:py-24">
+      <h1 class="text-4xl md:text-6xl lg:text-7xl font-headline-xl tracking-tighter text-on-surface leading-tight glitch-hover">
+        SECURE <span class="text-primary glow-effect px-2">ENCRYPTION</span> SUITE
+      </h1>
+      <p class="text-on-surface-variant max-w-2xl font-code-block text-code-block leading-relaxed mt-4">
+        CryptoWeb is an advanced toolkit for cryptographic engineers. Instantly hash, encrypt, encode, and securely share your sensitive data via one-time burnable links. Zero logs. Zero compromise.
+      </p>
+      <div class="flex gap-4 mt-8 flex-wrap justify-center">
+        <a href="/app" class="btn-tech font-label-caps text-label-caps px-8 py-4 flex items-center gap-2 rounded-sm">
+          <span class="material-symbols-outlined">terminal</span>
+          INITIATE TERMINAL
+        </a>
+        <a href="/handbook" class="border border-outline-variant text-on-surface-variant hover:border-secondary-fixed-dim hover:text-secondary-fixed-dim transition-all duration-200 font-label-caps text-label-caps px-8 py-4 flex items-center gap-2 rounded-sm">
+          <span class="material-symbols-outlined">menu_book</span>
+          DOCUMENTATION
+        </a>
       </div>
-      <a href="/app" class="border border-neon-green text-neon-green text-xs font-bold px-6 py-2 tracking-widest hover:bg-neon-green/10 transition-all active:scale-95">LAUNCH APP</a>
-    </nav>
+    </section>
 
-    <div class="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-8 flex flex-col gap-16 pb-20 mt-8 sm:mt-16">
+    <!-- SEO & Technologies Section -->
+    <section class="bg-[#141416]/60 backdrop-blur-[20px] panel-border p-8 relative rounded-sm group hover:border-primary/50 transition-colors">
+      <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
       
-      <!-- Hero Section -->
-      <section class="flex flex-col items-center text-center gap-6">
-        <h1 class="text-4xl sm:text-6xl font-bold tracking-widest text-pure-white leading-tight">
-          SECURE <span class="text-neon-green">ENCRYPTION</span> PROTOCOLS
-        </h1>
-        <p class="text-light-gray max-w-2xl font-mono text-sm leading-relaxed">
-          CryptoWeb is an advanced toolkit for developers and privacy enthusiasts. Instantly hash, encrypt, encode, and securely share your sensitive data using one-time burnable links. Zero logs. Zero compromise.
-        </p>
-        <div class="flex gap-4 mt-4">
-          <a href="/app" class="bg-neon-green/10 border border-neon-green text-neon-green font-bold text-sm px-8 py-4 tracking-widest hover:bg-neon-green hover:text-black-bg transition-all active:scale-95 shadow-[0_0_15px_rgba(57,255,20,0.2)]">
-            OPEN TERMINAL
-          </a>
+      <div class="flex items-center gap-3 mb-8">
+        <span class="material-symbols-outlined text-primary text-[24px]">account_tree</span>
+        <h2 class="font-headline-md text-headline-md tracking-widest text-on-surface">SUPPORTED PROTOCOLS</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="flex flex-col gap-2">
+          <h3 class="text-primary font-label-caps text-label-caps border-b border-outline-variant pb-2">HASHING</h3>
+          <ul class="font-code-block text-code-block text-on-surface-variant space-y-2 mt-2 list-disc pl-4">
+            <li>SHA-256 / SHA-512</li>
+            <li>SHA3-256 / BLAKE2b</li>
+            <li>bcrypt (Adaptive)</li>
+            <li>MD5 (Legacy)</li>
+          </ul>
         </div>
-      </section>
-
-      <!-- SEO & Technologies Section -->
-      <section class="mt-8 border-l-4 border-neon-green bg-neon-green/5 p-8 relative">
-        <h2 class="text-xl font-bold tracking-widest mb-6">SUPPORTED TECHNOLOGIES & PROTOCOLS</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          
-          <div class="flex flex-col gap-2">
-            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">HASHING</h3>
-            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
-              <li>MD5 (Message-Digest Algorithm)</li>
-              <li>SHA-256 (Secure Hash Algorithm 2)</li>
-              <li>SHA-512 (High-security hashing)</li>
-              <li>bcrypt (Adaptive password hashing)</li>
-            </ul>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">ENCRYPTION</h3>
-            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
-              <li>AES-256 (Advanced Encryption Standard)</li>
-              <li>3DES (Triple Data Encryption)</li>
-              <li>XOR Cipher (Stream ciphering)</li>
-              <li>ROT13 (Caesar substitution)</li>
-            </ul>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">ENCODING</h3>
-            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
-              <li>Base64 Encoding / Decoding</li>
-              <li>URL (Percent-encoding)</li>
-              <li>Hexadecimal (Base16)</li>
-              <li>Binary & Morse Code</li>
-            </ul>
-          </div>
-
-          <div class="flex flex-col gap-2">
-            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">SECURE UTILITIES</h3>
-            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
-              <li>Burnable One-Time Link Sharing</li>
-              <li>Secure Password Generator</li>
-              <li>JSON Formatter & Minifier</li>
-              <li>JWT (JSON Web Token) Decoder</li>
-            </ul>
-          </div>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-secondary-fixed-dim font-label-caps text-label-caps border-b border-outline-variant pb-2">ENCRYPTION</h3>
+          <ul class="font-code-block text-code-block text-on-surface-variant space-y-2 mt-2 list-disc pl-4">
+            <li>AES-256 (GCM)</li>
+            <li>ChaCha20-Poly1305</li>
+            <li>Fernet</li>
+            <li>3DES / XOR</li>
+          </ul>
         </div>
-      </section>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-on-surface font-label-caps text-label-caps border-b border-outline-variant pb-2">ENCODING</h3>
+          <ul class="font-code-block text-code-block text-on-surface-variant space-y-2 mt-2 list-disc pl-4">
+            <li>Base64 / Base32</li>
+            <li>Base85 / URL</li>
+            <li>Hexadecimal</li>
+            <li>Binary & Morse</li>
+          </ul>
+        </div>
+        <div class="flex flex-col gap-2">
+          <h3 class="text-error font-label-caps text-label-caps border-b border-outline-variant pb-2">UTILITIES</h3>
+          <ul class="font-code-block text-code-block text-on-surface-variant space-y-2 mt-2 list-disc pl-4">
+            <li>Burnable Links</li>
+            <li>Password Gen</li>
+            <li>JSON Formatter</li>
+            <li>JWT Decoder</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
       <!-- WebTech60 Section -->
-      <section class="border border-dark-gray bg-white/5 p-8 relative overflow-hidden mt-8">
-        <div class="absolute -right-20 -top-20 w-64 h-64 bg-yellow-400/10 blur-3xl rounded-full pointer-events-none"></div>
-        <h2 class="text-2xl font-bold tracking-widest mb-4 flex items-center gap-3 relative z-10">
-          <span class="text-yellow-400">⚡</span> ABOUT WEBTECH60
+      <section class="bg-[#141416]/60 backdrop-blur-[20px] panel-border p-8 relative rounded-sm group hover:border-secondary-fixed-dim/50 transition-colors flex flex-col">
+        <div class="corner-tl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-secondary-fixed-dim"></div>
+        <div class="font-status-label text-status-label text-on-surface-variant absolute top-0 left-0 bg-surface-container-lowest px-2 py-1 border-b border-r border-outline-variant rounded-br-sm">[AUTHOR_01]</div>
+        
+        <h2 class="font-headline-md text-headline-md tracking-widest mb-4 mt-6 flex items-center gap-3">
+          <span class="material-symbols-outlined text-secondary-fixed-dim">bolt</span> ABOUT WEBTECH60
         </h2>
-        <p class="text-light-gray font-mono text-sm leading-relaxed mb-8 relative z-10 max-w-3xl">
-          CryptoWeb is proudly developed and maintained by <strong class="text-pure-white">WebTech60 Studio</strong>. We specialize in building high-performance, secure, and modern web applications tailored to your business needs. From complex backend architectures to stunning frontend interfaces, we deliver excellence without compromise.
+        <p class="font-code-block text-code-block text-on-surface-variant leading-relaxed mb-8 flex-1">
+          CryptoWeb is proudly developed and maintained by <strong class="text-secondary-fixed-dim">WebTech60 Studio</strong>. We specialize in building high-performance, secure, and modern web applications tailored to your business needs. From complex backend architectures to stunning frontend interfaces, we deliver excellence without compromise.
         </p>
-        <a href="https://webtech60.ru" target="_blank" class="relative z-10 inline-block border border-yellow-400 text-yellow-400 text-xs font-bold px-6 py-3 tracking-widest hover:bg-yellow-400/10 transition-all active:scale-95">
-          VISIT WEBTECH60.RU
+        <a href="https://webtech60.ru" target="_blank" class="w-full border border-secondary-fixed-dim text-secondary-fixed-dim text-center font-label-caps text-label-caps py-3 rounded-sm hover:bg-secondary-fixed-dim hover:text-background transition-all duration-200">
+          ESTABLISH CONNECTION -> WEBTECH60.RU
         </a>
       </section>
 
       <!-- Feedback Form -->
-      <section class="border border-dark-gray bg-black-bg p-8 relative shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-        <h2 class="text-xl font-bold tracking-widest mb-2">FEEDBACK & SUPPORT</h2>
-        <p class="text-xs text-light-gray font-mono mb-8">Found a bug or want to order a project? Send us a direct message right to our Telegram.</p>
+      <section class="bg-[#141416]/60 backdrop-blur-[20px] panel-border p-8 relative rounded-sm group hover:border-primary/50 transition-colors">
+        <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+        <div class="font-status-label text-status-label text-on-surface-variant absolute top-0 left-0 bg-surface-container-lowest px-2 py-1 border-b border-r border-outline-variant rounded-br-sm">[COMM_LINK_01]</div>
+        
+        <h2 class="font-headline-md text-headline-md tracking-widest mb-2 mt-6">SECURE TRANSMISSION</h2>
+        <p class="font-code-block text-code-block text-on-surface-variant mb-6">Found a vulnerability? Need a custom deployment? Send an encrypted transmission directly to our terminal.</p>
 
-        <form id="feedbackForm" class="flex flex-col gap-5 max-w-lg">
-          <!-- Honeypot field (hidden from real users, bots will fill it) -->
+        <form id="feedbackForm" class="flex flex-col gap-4">
+          <!-- Honeypot field -->
           <div class="opacity-0 absolute -left-[9999px] top-0 pointer-events-none" aria-hidden="true">
             <label for="website">Website (Leave blank)</label>
             <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
           </div>
 
-          <div class="flex flex-col gap-1">
-            <label for="fbName" class="text-[10px] text-neon-green tracking-widest font-bold">NAME</label>
-            <input type="text" id="fbName" required class="bg-black-bg border border-dark-gray p-3 text-sm text-pure-white font-mono focus:outline-none focus:border-neon-green transition-colors" />
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1">
+              <label for="fbName" class="font-status-label text-status-label text-primary-fixed-dim">OPERATIVE (NAME)</label>
+              <input type="text" id="fbName" required class="bg-black/40 border border-outline-variant p-2 font-code-block text-code-block text-on-surface focus:outline-none focus:border-primary-fixed-dim transition-colors rounded-sm" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <label for="fbEmail" class="font-status-label text-status-label text-primary-fixed-dim">RETURN PATH (EMAIL)</label>
+              <input type="email" id="fbEmail" required class="bg-black/40 border border-outline-variant p-2 font-code-block text-code-block text-on-surface focus:outline-none focus:border-primary-fixed-dim transition-colors rounded-sm" />
+            </div>
           </div>
 
           <div class="flex flex-col gap-1">
-            <label for="fbEmail" class="text-[10px] text-neon-green tracking-widest font-bold">EMAIL</label>
-            <input type="email" id="fbEmail" required class="bg-black-bg border border-dark-gray p-3 text-sm text-pure-white font-mono focus:outline-none focus:border-neon-green transition-colors" />
+            <label for="fbMessage" class="font-status-label text-status-label text-primary-fixed-dim">PAYLOAD (MESSAGE)</label>
+            <textarea id="fbMessage" required rows="4" class="bg-black/40 border border-outline-variant p-2 font-code-block text-code-block text-on-surface focus:outline-none focus:border-primary-fixed-dim transition-colors rounded-sm resize-none"></textarea>
           </div>
 
-          <div class="flex flex-col gap-1">
-            <label for="fbMessage" class="text-[10px] text-neon-green tracking-widest font-bold">MESSAGE</label>
-            <textarea id="fbMessage" required rows="5" class="bg-black-bg border border-dark-gray p-3 text-sm text-pure-white font-mono focus:outline-none focus:border-neon-green transition-colors custom-scroll resize-none"></textarea>
-          </div>
-
-          <button type="submit" id="fbSubmit" class="mt-2 bg-neon-green/20 border border-neon-green text-neon-green font-bold text-xs py-3 tracking-widest hover:bg-neon-green hover:text-black-bg transition-all active:scale-95">
-            SEND MESSAGE
+          <button type="submit" id="fbSubmit" class="btn-tech w-full py-3 font-label-caps text-label-caps rounded-sm flex items-center justify-center gap-2 mt-2">
+            <span class="material-symbols-outlined text-[18px]">send</span> TRANSMIT
           </button>
           
-          <div id="fbStatus" class="text-xs font-mono hidden mt-2"></div>
+          <div id="fbStatus" class="font-status-label text-status-label hidden mt-2 text-center"></div>
         </form>
       </section>
 
@@ -151,8 +152,8 @@ import Layout from '../layouts/Layout.astro';
     const website = (document.getElementById('website') as HTMLInputElement).value; // honeypot
     
     submitBtn.disabled = true;
-    submitBtn.textContent = 'SENDING...';
-    statusDiv.className = 'text-xs font-mono hidden mt-2';
+    submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> TRANSMITTING...';
+    statusDiv.className = 'font-status-label text-status-label hidden mt-2 text-center';
     
     try {
       const res = await fetch('/api/feedback', {
@@ -168,21 +169,14 @@ import Layout from '../layouts/Layout.astro';
       }
       
       form.reset();
-      statusDiv.textContent = data.message || 'Message sent successfully!';
-      statusDiv.className = 'text-xs font-mono text-neon-green mt-2';
+      statusDiv.textContent = data.message || 'TRANSMISSION SUCCESSFUL';
+      statusDiv.className = 'font-status-label text-status-label text-primary-fixed-dim mt-2 text-center';
     } catch (err: any) {
-      statusDiv.textContent = err.message;
-      statusDiv.className = 'text-xs font-mono text-red-500 mt-2';
+      statusDiv.textContent = 'ERROR: ' + err.message;
+      statusDiv.className = 'font-status-label text-status-label text-error mt-2 text-center';
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = 'SEND MESSAGE';
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">send</span> TRANSMIT';
     }
   });
 </script>
-
-<style>
-  .custom-scroll::-webkit-scrollbar       { width: 6px; }
-  .custom-scroll::-webkit-scrollbar-track { background: var(--color-black-bg); }
-  .custom-scroll::-webkit-scrollbar-thumb { background: var(--color-dark-gray); }
-  .custom-scroll:hover::-webkit-scrollbar-thumb { background: var(--color-neon-green); }
-</style>

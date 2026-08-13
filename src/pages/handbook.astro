@@ -1,0 +1,319 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout 
+  title="CryptoWeb | Protocol Documentation & Reference"
+  description="Comprehensive documentation on cryptographic protocols available in CryptoWeb: AES-256, 3DES, SHA-256, bcrypt, Base64, and secure key sharing."
+>
+  <!-- SideNavBar -->
+  <nav class="hidden md:flex flex-col pt-8 pb-8 h-full w-64 border-r border-outline-variant bg-surface-container-lowest z-30 shrink-0 fixed top-16 left-0">
+    <div class="px-6 mb-8">
+      <h2 class="font-headline-md text-headline-md text-primary mb-1">PROTOCOLS</h2>
+      <div class="font-code-block text-code-block text-on-surface-variant">v4.0.2-STABLE</div>
+    </div>
+    <ul class="flex flex-col gap-panel-gap flex-1 px-4">
+      <a href="#hashing" class="bg-primary/20 text-primary border-l-4 border-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors duration-150 cursor-pointer hover:translate-x-1 font-label-caps text-label-caps">
+        <span class="material-symbols-outlined text-[18px]">fingerprint</span>
+        Hashing
+      </a>
+      <a href="#encoding" class="text-on-surface-variant hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors duration-150 cursor-pointer hover:translate-x-1 font-label-caps text-label-caps">
+        <span class="material-symbols-outlined text-[18px]">code</span>
+        Encoding
+      </a>
+      <a href="#encryption" class="text-on-surface-variant hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors duration-150 cursor-pointer hover:translate-x-1 font-label-caps text-label-caps">
+        <span class="material-symbols-outlined text-[18px]">lock</span>
+        Encryption
+      </a>
+      <a href="#utilities" class="text-on-surface-variant hover:text-primary px-4 py-3 flex items-center gap-3 hover:bg-surface-container-highest transition-colors duration-150 cursor-pointer hover:translate-x-1 font-label-caps text-label-caps">
+        <span class="material-symbols-outlined text-[18px]">settings_ethernet</span>
+        Utilities
+      </a>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-4 md:p-8 lg:p-12 md:ml-64 w-full relative pb-24 scroll-smooth">
+    <div class="mb-8 flex flex-col gap-2 border-l-2 border-primary pl-4">
+      <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tighter">PROTOCOL REFERENCE</h1>
+      <p class="text-on-surface-variant font-code-block text-sm max-w-3xl">
+        This documentation provides an overview of all cryptographic algorithms, hashing functions, and encoding schemes available within the CryptoWeb suite.
+      </p>
+    </div>
+
+    <!-- HASHING -->
+    <section id="hashing" class="mb-16 pt-8 border-t border-outline-variant">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-primary text-3xl">fingerprint</span>
+        <h2 class="text-2xl font-bold tracking-widest text-primary">HASHING PROTOCOLS</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        
+        <!-- MD5 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-error/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-error"></div><div class="corner-tr corner-accent group-hover:border-error"></div><div class="corner-bl corner-accent group-hover:border-error"></div><div class="corner-br corner-accent group-hover:border-error"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[HASH_01]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-error/10 text-error border border-error/30 crt-glow shadow-error/20">DEPRECATED</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-error transition-colors">MD5</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Message-Digest Algorithm 5. Produces a 128-bit hash value. Vulnerable to collision attacks and should not be used for secure applications.</p>
+          </div>
+        </div>
+
+        <!-- SHA-256 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary-fixed-dim/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-primary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[HASH_02]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-primary-fixed-dim/10 text-primary-fixed-dim border border-primary-fixed-dim/30 crt-glow shadow-primary-fixed-dim/20 pulse-slow">SECURE</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors flex items-center gap-2">SHA-256</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Secure Hash Algorithm 2. Cryptographic hash function generating a 256-bit signature. Industry standard for data integrity and blockchain.</p>
+          </div>
+        </div>
+
+        <!-- SHA-512 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary-fixed-dim/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-primary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[HASH_03]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-primary-fixed-dim/10 text-primary-fixed-dim border border-primary-fixed-dim/30 crt-glow shadow-primary-fixed-dim/20 pulse-slow">SECURE</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors flex items-center gap-2">SHA-512</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">A variant of SHA-2 generating a 512-bit digest. Operates on 64-bit words, making it faster on 64-bit architectures than SHA-256.</p>
+          </div>
+        </div>
+
+        <!-- bcrypt -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-secondary-fixed-dim/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-secondary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[HASH_04]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-secondary-fixed-dim/10 text-secondary-fixed-dim border border-secondary-fixed-dim/30 crt-glow shadow-secondary-fixed-dim/20">SLOW HASH</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-secondary-fixed-dim transition-colors flex items-center gap-2">bcrypt</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">A password-hashing function based on the Blowfish cipher. Intentionally slow to resist hardware brute-force attacks.</p>
+          </div>
+        </div>
+
+
+        <!-- SHA3-256 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary-fixed-dim/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-primary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[HASH_05]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-primary-fixed-dim/10 text-primary-fixed-dim border border-primary-fixed-dim/30 crt-glow shadow-primary-fixed-dim/20 pulse-slow">SECURE</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors flex items-center gap-2">SHA3-256</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Latest member of the Secure Hash Algorithm family, based on the Keccak sponge function. Highly resistant to length-extension attacks.</p>
+          </div>
+        </div>
+
+        <!-- BLAKE2b -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary-fixed-dim/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-primary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-primary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[HASH_06]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-primary-fixed-dim/10 text-primary-fixed-dim border border-primary-fixed-dim/30 crt-glow shadow-primary-fixed-dim/20">BLAZING</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors flex items-center gap-2">BLAKE2b</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">A cryptographic hash function faster than MD5, SHA-1, SHA-2, and SHA-3, yet highly secure. Excellent for high-performance hashing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENCODING -->
+    <section id="encoding" class="mb-16 pt-8 border-t border-outline-variant">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-on-surface text-3xl">code</span>
+        <h2 class="text-2xl font-bold tracking-widest text-on-surface">ENCODING SCHEMES</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        
+        <!-- Base64 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[ENC_01]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-surface-variant text-on-surface border border-outline-variant">STANDARD</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Base64</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Translates binary data into a radix-64 representation using A-Z, a-z, 0-9, +, /. Not an encryption method.</p>
+          </div>
+        </div>
+
+        <!-- URL -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[ENC_02]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-surface-variant text-on-surface border border-outline-variant">WEB</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">URL (Percent)</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Replaces unsafe ASCII characters with a '%' followed by two hexadecimal digits. Crucial for passing data in URIs.</p>
+          </div>
+        </div>
+
+        <!-- Hex -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[ENC_03]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-surface-variant text-on-surface border border-outline-variant">BASE16</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Hexadecimal</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Represents every byte of data as two hexadecimal digits (0-9, a-f). Commonly used for cryptographic keys and hashes.</p>
+          </div>
+        </div>
+
+        <!-- Binary & Morse -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors rounded-sm h-full md:col-span-2 xl:col-span-3">
+          <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[ENC_04]</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Binary</h3>
+              <p class="font-code-block text-code-block text-on-surface-variant mt-2">Raw 0s and 1s representation of the UTF-8 payload.</p>
+            </div>
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Morse Code</h3>
+              <p class="font-code-block text-code-block text-on-surface-variant mt-2">Legacy telecommunication encoding representing text characters as standardized sequences of dots and dashes.</p>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Base32 / Base85 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[ENC_05]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-surface-variant text-on-surface border border-outline-variant">ADVANCED</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">Base32 / Base85</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Base32 uses a 32-character alphabet (often for human-readable codes). Base85 (Ascii85) is more efficient than Base64 (used in PDF/IPv6).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENCRYPTION -->
+    <section id="encryption" class="mb-16 pt-8 border-t border-outline-variant">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-secondary-fixed-dim text-3xl">lock</span>
+        <h2 class="text-2xl font-bold tracking-widest text-secondary-fixed-dim">ENCRYPTION ALGORITHMS</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+        
+        <!-- AES -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-secondary-fixed-dim/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-secondary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[CRYPT_01]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-secondary-fixed-dim/10 text-secondary-fixed-dim border border-secondary-fixed-dim/30 crt-glow shadow-secondary-fixed-dim/20">MIL-SPEC</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-secondary-fixed-dim transition-colors">AES-256 (GCM)</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Advanced Encryption Standard in Galois/Counter Mode. Uses a 256-bit symmetric key to encrypt blocks of data. GCM provides both confidentiality and data authenticity (AAD supported). Industry standard for top-secret information.</p>
+          </div>
+        </div>
+
+        <!-- 3DES -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-error/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-error"></div><div class="corner-tr corner-accent group-hover:border-error"></div><div class="corner-bl corner-accent group-hover:border-error"></div><div class="corner-br corner-accent group-hover:border-error"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[CRYPT_02]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-error/10 text-error border border-error/30 crt-glow shadow-error/20">LEGACY</span>
+          </div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-error transition-colors">3DES (Triple DES)</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Applies the Data Encryption Standard (DES) cipher algorithm three times to each data block. Largely superseded by AES but maintained for backward compatibility.</p>
+          </div>
+        </div>
+
+        <!-- XOR & ROT13 -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-primary/30 transition-colors rounded-sm h-full xl:col-span-2">
+          <div class="corner-tl corner-accent group-hover:border-primary"></div><div class="corner-tr corner-accent group-hover:border-primary"></div><div class="corner-bl corner-accent group-hover:border-primary"></div><div class="corner-br corner-accent group-hover:border-primary"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[CRYPT_03]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-surface-variant text-on-surface border border-outline-variant">BASIC</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">XOR Cipher</h3>
+              <p class="font-code-block text-code-block text-on-surface-variant mt-2">A simple additive cipher operating via the XOR logical operation. Perfectly secure ONLY if the key is truly random, never reused, and equals the payload length (One-Time Pad).</p>
+            </div>
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">ROT13</h3>
+              <p class="font-code-block text-code-block text-on-surface-variant mt-2">A simple letter substitution cipher that replaces a letter with the 13th letter after it in the alphabet. Provides zero actual cryptographic security.</p>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- ChaCha20 / Fernet -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-secondary-fixed-dim/50 transition-colors rounded-sm h-full xl:col-span-2">
+          <div class="corner-tl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-tr corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-bl corner-accent group-hover:border-secondary-fixed-dim"></div><div class="corner-br corner-accent group-hover:border-secondary-fixed-dim"></div>
+          <div class="flex justify-between items-start">
+            <span class="font-status-label text-status-label text-on-surface-variant">[CRYPT_04]</span>
+            <span class="font-label-caps text-label-caps px-2 py-1 bg-secondary-fixed-dim/10 text-secondary-fixed-dim border border-secondary-fixed-dim/30 crt-glow shadow-secondary-fixed-dim/20">MODERN</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-secondary-fixed-dim transition-colors">ChaCha20-Poly1305</h3>
+              <p class="font-code-block text-code-block text-on-surface-variant mt-2">A high-speed stream cipher with Poly1305 authenticator. Often faster than AES on platforms without hardware acceleration and highly secure.</p>
+            </div>
+            <div>
+              <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-secondary-fixed-dim transition-colors">Fernet</h3>
+              <p class="font-code-block text-code-block text-on-surface-variant mt-2">A symmetric encryption recipe built on AES in CBC mode with a 128-bit key and HMAC-SHA256 authentication. Safe and straightforward.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UTILITIES -->
+    <section id="utilities" class="mb-16 pt-8 border-t border-outline-variant">
+      <div class="flex items-center gap-3 mb-6">
+        <span class="material-symbols-outlined text-error text-3xl">settings_ethernet</span>
+        <h2 class="text-2xl font-bold tracking-widest text-error">UTILITIES & FORMATTING</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        
+        <!-- JWT -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-error/50 transition-colors rounded-sm h-full">
+          <div class="corner-tl corner-accent group-hover:border-error"></div><div class="corner-tr corner-accent group-hover:border-error"></div><div class="corner-bl corner-accent group-hover:border-error"></div><div class="corner-br corner-accent group-hover:border-error"></div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-error transition-colors">JWT Decoder</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Parses JSON Web Tokens (JWT) into readable Header and Payload JSON structures without validating the signature.</p>
+          </div>
+        </div>
+
+        <!-- Burnable Links -->
+        <div class="relative bg-[#141416]/60 backdrop-blur-[20px] border border-white/10 p-6 flex flex-col gap-4 group hover:border-error/50 transition-colors rounded-sm h-full md:col-span-2">
+          <div class="corner-tl corner-accent group-hover:border-error"></div><div class="corner-tr corner-accent group-hover:border-error"></div><div class="corner-bl corner-accent group-hover:border-error"></div><div class="corner-br corner-accent group-hover:border-error"></div>
+          <div>
+            <h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-error transition-colors">Burnable One-Time Links</h3>
+            <p class="font-code-block text-code-block text-on-surface-variant mt-2">Generated via Redis backend. The data (and optionally the AES decryption key) is temporarily stored in-memory and permanently erased either upon the first view or after a strict 24-hour TTL expiration. Guaranteed zero disk persistence.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</Layout>

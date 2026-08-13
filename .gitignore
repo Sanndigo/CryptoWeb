@@ -24,3 +24,7 @@ pnpm-debug.log*
 .idea/
 venv/
 __pycache__/
+/examples/
+/scratch/
+src/api/__pycache__/
+src/api/services/__pycache__/

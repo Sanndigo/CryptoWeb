@@ -121,18 +121,22 @@ def process_all(request: Request, payload: TextInput):
     res = {}
 
     # Hashing
-    if cat in ("all", "hashing") or meth in ("MD5", "SHA-256", "SHA-512", "bcrypt"):
+    if cat in ("all", "hashing") or meth in ("MD5", "SHA-256", "SHA-512", "SHA3-256", "BLAKE2b", "bcrypt"):
         h_res = {}
         if meth in ("all", "MD5"): h_res["MD5"] = hashing.hash_md5(text)
         if meth in ("all", "SHA-256"): h_res["SHA-256"] = hashing.hash_sha256(text)
         if meth in ("all", "SHA-512"): h_res["SHA-512"] = hashing.hash_sha512(text)
+        if meth in ("all", "SHA3-256"): h_res["SHA3-256"] = hashing.hash_sha3_256(text)
+        if meth in ("all", "BLAKE2b"): h_res["BLAKE2b"] = hashing.hash_blake2b(text)
         if meth in ("all", "bcrypt"): h_res["bcrypt"] = hashing.hash_bcrypt(text) if text else "Awaiting input..."
         if h_res: res["hashing"] = h_res
 
     # Encoding
-    if cat in ("all", "encoding") or meth in ("Base64", "URL", "Hex", "Binary", "Morse"):
+    if cat in ("all", "encoding") or meth in ("Base64", "Base32", "Base85", "URL", "Hex", "Binary", "Morse"):
         e_res = {}
         if meth in ("all", "Base64"): e_res["Base64"] = {"Encode": encoding.encode_base64(text), "Decode": encoding.decode_base64(text)}
+        if meth in ("all", "Base32"): e_res["Base32"] = {"Encode": encoding.encode_base32(text), "Decode": encoding.decode_base32(text)}
+        if meth in ("all", "Base85"): e_res["Base85"] = {"Encode": encoding.encode_base85(text), "Decode": encoding.decode_base85(text)}
         if meth in ("all", "URL"): e_res["URL"] = {"Encode": encoding.encode_url(text), "Decode": encoding.decode_url(text)}
         if meth in ("all", "Hex"): e_res["Hex"] = {"Encode": encoding.encode_hex(text), "Decode": encoding.decode_hex(text)}
         if meth in ("all", "Binary"): e_res["Binary"] = {"Encode": encoding.encode_binary(text), "Decode": encoding.decode_binary(text)}
@@ -140,12 +144,22 @@ def process_all(request: Request, payload: TextInput):
         if e_res: res["encoding"] = e_res
 
     # Encryption
-    if cat in ("all", "encryption") or meth in ("AES-256", "3DES", "ROT13", "XOR"):
+    if cat in ("all", "encryption") or meth in ("AES-256", "ChaCha20", "Fernet", "3DES", "ROT13", "XOR"):
         enc_res = {}
         if meth in ("all", "AES-256"):
             enc_res["AES-256"] = {
                 "Encrypt": encryption.encrypt_aes(text, key, adv.aes_key_bits, adv.aes_aad, adv.aes_output_format),
                 "Decrypt": encryption.decrypt_aes(text, key, adv.aes_key_bits, adv.aes_aad, adv.aes_output_format),
+            }
+        if meth in ("all", "ChaCha20"):
+            enc_res["ChaCha20"] = {
+                "Encrypt": encryption.encrypt_chacha(text, key, adv.aes_output_format),
+                "Decrypt": encryption.decrypt_chacha(text, key, adv.aes_output_format),
+            }
+        if meth in ("all", "Fernet"):
+            enc_res["Fernet"] = {
+                "Encrypt": encryption.encrypt_fernet(text, key),
+                "Decrypt": encryption.decrypt_fernet(text, key),
             }
         if meth in ("all", "3DES"):
             enc_res["3DES"] = {

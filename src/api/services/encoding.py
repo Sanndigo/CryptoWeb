@@ -15,6 +15,29 @@ def decode_base64(text: str) -> str:
         return "Invalid Base64"
 
 
+
+# ── Base32 ───────────────────────────────────────────────────────────────────
+
+def encode_base32(text: str) -> str:
+    return base64.b32encode(text.encode('utf-8')).decode('utf-8')
+
+def decode_base32(text: str) -> str:
+    try:
+        return base64.b32decode(text.encode('utf-8'), casefold=True).decode('utf-8')
+    except Exception:
+        return "Invalid Base32"
+
+# ── Base85 ───────────────────────────────────────────────────────────────────
+
+def encode_base85(text: str) -> str:
+    return base64.b85encode(text.encode('utf-8')).decode('utf-8')
+
+def decode_base85(text: str) -> str:
+    try:
+        return base64.b85decode(text.encode('utf-8')).decode('utf-8')
+    except Exception:
+        return "Invalid Base85"
+
 # ── URL ──────────────────────────────────────────────────────────────────────
 
 def encode_url(text: str) -> str:

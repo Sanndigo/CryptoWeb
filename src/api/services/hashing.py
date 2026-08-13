@@ -22,3 +22,10 @@ def hash_bcrypt(text: str) -> str:
         return hashed.decode('utf-8')
     except Exception:
         return "bcrypt error"
+
+
+def hash_sha3_256(text: str) -> str:
+    return hashlib.sha3_256(text.encode('utf-8')).hexdigest()
+
+def hash_blake2b(text: str) -> str:
+    return hashlib.blake2b(text.encode('utf-8')).hexdigest()
