@@ -3,6 +3,22 @@
 ---
 <div class="flex flex-col gap-6 w-full">
 
+  <!-- ── Operation Mode Switcher (ENCRYPT / DECRYPT) ───────────────────── -->
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-3 panel-border bg-[#141416]/60 backdrop-blur-[20px] p-3 rounded-sm relative z-30">
+    <div class="font-status-label text-status-label text-on-surface-variant flex items-center gap-2">
+      <span class="material-symbols-outlined text-[16px] text-primary">tune</span>
+      PROCESSING MODE:
+    </div>
+    <div class="flex items-center bg-black/60 border border-outline-variant rounded-sm p-1 gap-1 w-full sm:w-auto">
+      <button id="modeEncryptBtn" class="flex-1 sm:flex-none px-4 py-1.5 font-label-caps text-[11px] rounded-sm transition-all duration-200 bg-primary/20 text-primary border border-primary/40 font-bold shadow-[0_0_10px_rgba(0,255,65,0.2)]">
+        ENCRYPT / ENCODE
+      </button>
+      <button id="modeDecryptBtn" class="flex-1 sm:flex-none px-4 py-1.5 font-label-caps text-[11px] rounded-sm transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-white/5 border border-transparent">
+        DECRYPT / DECODE
+      </button>
+    </div>
+  </div>
+
   <!-- ── Operation & Method Selectors ───────────────────────────────────── -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 panel-border bg-[#141416]/60 backdrop-blur-[20px] p-4 rounded-sm relative group z-30">
     <div class="corner-tl corner-accent group-hover:border-primary-fixed-dim"></div>
@@ -52,7 +68,7 @@
       
       <div class="mt-8 flex-1 flex flex-col">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="font-headline-md text-headline-md text-primary">Original Payload</h2>
+          <h2 id="inputHeading" class="font-headline-md text-headline-md text-primary">Original Payload</h2>
           <span id="charCount" class="font-code-block text-code-block text-outline">0 / 1000</span>
         </div>
         
@@ -164,7 +180,7 @@
       
       <div class="mt-8 flex-1 flex flex-col">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="font-headline-md text-headline-md text-secondary-fixed-dim">Processed Output</h2>
+          <h2 id="outputHeading" class="font-headline-md text-headline-md text-secondary-fixed-dim">Processed Output</h2>
           <span id="outputFormatBadge" class="bg-secondary-fixed-dim/20 text-secondary-fixed-dim px-2 py-0.5 rounded-sm font-status-label text-status-label border border-secondary-fixed-dim/30">RESULT</span>
         </div>
         
@@ -337,8 +353,38 @@
 
 <script>
   // Custom Dropdowns Logic
+  let activeMode: 'encrypt' | 'decrypt' = 'encrypt';
   let activeCategory = 'hashing';
   let activeMethod = 'MD5';
+
+  const modeEncryptBtn = document.getElementById('modeEncryptBtn') as HTMLButtonElement;
+  const modeDecryptBtn = document.getElementById('modeDecryptBtn') as HTMLButtonElement;
+  const inputHeading    = document.getElementById('inputHeading') as HTMLHeadingElement;
+  const outputHeading   = document.getElementById('outputHeading') as HTMLHeadingElement;
+
+  modeEncryptBtn.addEventListener('click', () => {
+    activeMode = 'encrypt';
+    modeEncryptBtn.className = 'flex-1 sm:flex-none px-4 py-1.5 font-label-caps text-[11px] rounded-sm transition-all duration-200 bg-primary/20 text-primary border border-primary/40 font-bold shadow-[0_0_10px_rgba(0,255,65,0.2)]';
+    modeDecryptBtn.className = 'flex-1 sm:flex-none px-4 py-1.5 font-label-caps text-[11px] rounded-sm transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-white/5 border border-transparent';
+    
+    inputHeading.textContent = 'Original Payload';
+    outputHeading.textContent = 'Processed Output';
+    sourceText.placeholder = 'Enter payload to process...';
+    
+    processData();
+  });
+
+  modeDecryptBtn.addEventListener('click', () => {
+    activeMode = 'decrypt';
+    modeDecryptBtn.className = 'flex-1 sm:flex-none px-4 py-1.5 font-label-caps text-[11px] rounded-sm transition-all duration-200 bg-secondary-fixed-dim/20 text-secondary-fixed-dim border border-secondary-fixed-dim/40 font-bold shadow-[0_0_10px_rgba(0,219,233,0.2)]';
+    modeEncryptBtn.className = 'flex-1 sm:flex-none px-4 py-1.5 font-label-caps text-[11px] rounded-sm transition-all duration-200 text-on-surface-variant hover:text-on-surface hover:bg-white/5 border border-transparent';
+    
+    inputHeading.textContent = 'Ciphertext / Encoded Payload';
+    outputHeading.textContent = 'Decrypted Output';
+    sourceText.placeholder = 'Enter ciphertext or encoded data to decrypt...';
+    
+    processData();
+  });
 
   const catBtn = document.getElementById('catBtn') as HTMLButtonElement;
   const catMenu = document.getElementById('catMenu') as HTMLDivElement;
@@ -651,10 +697,28 @@
 
     if (typeof val === 'object' && val !== null) {
       const keys = Object.keys(val);
-      if (keys.length === 1 && typeof val[keys[0]] === 'string') {
+      if (keys.length === 1) {
         val = val[keys[0]];
       }
     }
+
+    if (typeof val === 'object' && val !== null) {
+      if (activeMode === 'encrypt') {
+        if ('Encrypt' in val) return val.Encrypt;
+        if ('Encode' in val) return val.Encode;
+      } else {
+        if ('Decrypt' in val) return val.Decrypt;
+        if ('Decode' in val) return val.Decode;
+      }
+      if (activeCategory === 'hashing' && activeMode === 'decrypt') {
+        return '[HASHING IS A ONE-WAY FUNCTION AND CANNOT BE DECRYPTED]';
+      }
+    }
+
+    if (activeCategory === 'hashing' && activeMode === 'decrypt') {
+      return '[HASHING IS A ONE-WAY FUNCTION AND CANNOT BE DECRYPTED]';
+    }
+
     return val;
   }
 
