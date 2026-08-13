@@ -1,0 +1,21 @@
+# CryptoWeb (webcrypt60)
+
+> Advanced Cryptography & Key Management Suite developed by WebTech60 Studio.
+
+## Overview
+CryptoWeb is a full-featured web application providing developers and security engineers with instant cryptographic operations:
+- Hashing: MD5, SHA-256, SHA-512, SHA3-256, BLAKE2b, bcrypt
+- Encryption: AES-256-GCM, ChaCha20-Poly1305, Fernet, 3DES, XOR, ROT13
+- Encoding: Base64, Base32, Base85, Hex, Binary, URL, Morse
+- Key Generation: Symmetric keys, passwords, RSA-2048, RSA-4096, ECC Ed25519 key pairs
+- Secure Share: One-time burnable links with 24-hour TTL and Redis backend
+
+## Pages & Applications
+- [/] - Main landing page and WebTech60 feedback submission
+- [/app] - Universal Cryptographic Terminal
+- [/handbook] - Complete documentation and technical protocol specification
+
+## API Endpoints
+- [/api/process] - POST endpoint for data processing (hashing, encoding, encryption, formatting)
+- [/api/generate-key] - POST endpoint for symmetric and asymmetric key generation
+- [/api/share] - POST endpoint for burnable secure link creation

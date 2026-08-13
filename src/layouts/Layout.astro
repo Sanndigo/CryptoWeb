@@ -7,6 +7,7 @@ interface Props {
 }
 
 const { title, description = "CryptoWeb (webcrypt60) - Advanced online toolkit for developers. Hash, encode, encrypt, and securely share data." } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, 'https://crypto.webtech60.ru');
 ---
 
 <!doctype html>
@@ -14,8 +15,53 @@ const { title, description = "CryptoWeb (webcrypt60) - Advanced online toolkit f
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Favicons (Clean Key Symbol) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="keywords" content="cryptography, crypto, online encryption, AES-256, ChaCha20, RSA key generator, ECC Ed25519, SHA-256, SHA3-256, BLAKE2b, bcrypt, base64 encoder, burnable links, webtech60, webcrypt60" />
+    <meta name="author" content="WebTech60 Studio" />
+    <meta name="theme-color" content="#131314" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Telegram / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="https://crypto.webtech60.ru/og-image.jpg" />
+    <meta property="og:site_name" content="CryptoWeb by WebTech60" />
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://crypto.webtech60.ru/og-image.jpg" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json" is:inline>
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "CryptoWeb (webcrypt60)",
+        "url": "https://crypto.webtech60.ru",
+        "description": "Professional web cryptography suite for developers. Hash, encode, encrypt, generate RSA/ECC keys, and share burnable secret links.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All",
+        "author": {
+          "@type": "Organization",
+          "name": "WebTech60 Studio",
+          "url": "https://webtech60.ru"
+        }
+      }
+    </script>
+
     <meta name="generator" content={Astro.generator} />
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,8 +75,10 @@ const { title, description = "CryptoWeb (webcrypt60) - Advanced online toolkit f
     
     <div class="scanline fixed inset-0 pointer-events-none z-50"></div>
     
-    <header class="fixed top-0 w-full z-40 border-b border-outline-variant bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_0_15px_rgba(0,230,57,0.1)] flex justify-between items-center h-16 px-4 md:px-16 transition-all duration-200">
-      <a href="/" class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold tracking-tighter text-primary glitch-hover cursor-pointer">WEBCRYPT_60</a>
+    <header class="fixed top-0 w-full z-40 border-b border-outline-variant bg-surface-container-lowest/80 backdrop-blur-xl shadow-[0_0_15px_rgba(0,230,57,0.1)] flex justify-between items-center h-20 px-4 md:px-12 transition-all duration-200">
+      <a href="/" class="flex items-center glitch-hover cursor-pointer group py-1">
+        <img src="/logo.png" alt="WebCrypt60" class="h-28 w-auto object-contain group-hover:scale-105 transition-transform" />
+      </a>
       
       <div class="flex items-center gap-6">
         <div class="flex items-center" title="Network Status">
@@ -47,7 +95,7 @@ const { title, description = "CryptoWeb (webcrypt60) - Advanced online toolkit f
       </div>
     </header>
 
-    <div class="flex flex-1 pt-16 min-h-screen">
+    <div class="flex flex-1 pt-20 min-h-screen">
       <slot />
     </div>
     

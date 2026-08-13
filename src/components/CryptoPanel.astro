@@ -214,10 +214,13 @@
               <span class="material-symbols-outlined text-[14px] text-on-surface-variant">arrow_drop_down</span>
             </button>
             <div id="genTypeMenu" class="absolute left-0 right-0 bottom-full mb-1 bg-surface-container-lowest border border-outline-variant rounded-sm shadow-[0_-5px_15px_rgba(0,0,0,0.5)] hidden flex-col z-50 animate-slide-up">
-              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="AES-256">AES/ChaCha</button>
+              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="AES-256">AES / ChaCha</button>
+              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="RSA-2048">RSA-2048 Pair</button>
+              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="RSA-4096">RSA-4096 Pair</button>
+              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="Ed25519">ECC Ed25519</button>
               <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="3DES">3DES</button>
               <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors border-b border-outline-variant/30" data-val="Fernet">Fernet</button>
-              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors" data-val="RandomHex">Hex</button>
+              <button class="type-opt text-left px-3 py-2 font-code-block text-[11px] text-on-surface hover:bg-secondary-fixed-dim/20 hover:text-secondary-fixed-dim transition-colors" data-val="RandomHex">Random Hex</button>
             </div>
           </div>
         </div>
@@ -245,12 +248,36 @@
 
       <div id="keyGenResultWrapper" class="expand-wrapper mt-1">
         <div class="expand-inner">
-          <div id="keyGenResultArea" class="flex flex-col gap-2 border-t border-outline-variant pt-3 opacity-0 transition-opacity duration-300">
-        <div class="flex gap-2">
-          <input type="text" id="keyGenOutput" readonly class="flex-1 bg-black/60 border border-secondary-fixed-dim/30 p-2 font-code-block text-[11px] text-secondary-fixed-dim outline-none rounded-sm" />
-          <button id="copyGenKeyBtn" class="btn-tech px-3 font-label-caps text-[11px] rounded-sm border-secondary-fixed-dim text-secondary-fixed-dim hover:bg-secondary-fixed-dim hover:text-background transition-colors">COPY</button>
-        </div>
-        <button id="useGenKeyBtn" class="btn-tech w-full py-1.5 font-label-caps text-[11px] rounded-sm text-center border-secondary-fixed-dim text-secondary-fixed-dim hover:bg-secondary-fixed-dim hover:text-background transition-colors">APPLY TO INPUT</button>
+          <div id="keyGenResultArea" class="flex flex-col gap-3 border-t border-outline-variant pt-3 opacity-0 transition-opacity duration-300">
+            
+            <!-- Single Key Output -->
+            <div id="singleKeyArea" class="flex flex-col gap-2">
+              <div class="flex gap-2">
+                <input type="text" id="keyGenOutput" readonly class="flex-1 bg-black/60 border border-secondary-fixed-dim/30 p-2 font-code-block text-[11px] text-secondary-fixed-dim outline-none rounded-sm" />
+                <button id="copyGenKeyBtn" class="btn-tech px-3 font-label-caps text-[11px] rounded-sm border-secondary-fixed-dim text-secondary-fixed-dim hover:bg-secondary-fixed-dim hover:text-background transition-colors">COPY</button>
+              </div>
+              <button id="useGenKeyBtn" class="btn-tech w-full py-1.5 font-label-caps text-[11px] rounded-sm text-center border-secondary-fixed-dim text-secondary-fixed-dim hover:bg-secondary-fixed-dim hover:text-background transition-colors">APPLY TO INPUT</button>
+            </div>
+
+            <!-- Key Pair Output (Asymmetric) -->
+            <div id="keyPairArea" class="hidden flex-col gap-3">
+              <div class="flex flex-col gap-1">
+                <div class="font-status-label text-[10px] text-primary-fixed-dim flex justify-between">
+                  <span>PUBLIC KEY (PEM)</span>
+                  <button id="copyPubKeyBtn" class="hover:text-primary transition-colors text-[10px] font-code-block cursor-pointer">[COPY PUBLIC]</button>
+                </div>
+                <textarea id="pubKeyOutput" readonly rows="3" class="w-full bg-black/60 border border-primary/30 p-2 font-code-block text-[10px] text-primary outline-none rounded-sm resize-none custom-scroll"></textarea>
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="font-status-label text-[10px] text-secondary-fixed-dim flex justify-between">
+                  <span>PRIVATE KEY (PEM)</span>
+                  <button id="copyPrivKeyBtn" class="hover:text-secondary-fixed-dim transition-colors text-[10px] font-code-block cursor-pointer">[COPY PRIVATE]</button>
+                </div>
+                <textarea id="privKeyOutput" readonly rows="4" class="w-full bg-black/60 border border-secondary-fixed-dim/30 p-2 font-code-block text-[10px] text-secondary-fixed-dim outline-none rounded-sm resize-none custom-scroll"></textarea>
+              </div>
+              <button id="usePrivKeyBtn" class="btn-tech w-full py-1.5 font-label-caps text-[11px] rounded-sm text-center border-secondary-fixed-dim text-secondary-fixed-dim hover:bg-secondary-fixed-dim hover:text-background transition-colors">APPLY PRIVATE KEY TO INPUT</button>
+            </div>
+
           </div>
         </div>
       </div>
@@ -852,7 +879,26 @@
         body: JSON.stringify({ algorithm: alg, length: parseInt(len) })
       });
       const data = await res.json();
-      keyGenOutput.value = data.key;
+      
+      const singleArea = document.getElementById('singleKeyArea') as HTMLDivElement;
+      const pairArea = document.getElementById('keyPairArea') as HTMLDivElement;
+
+      if (data.is_pair) {
+        singleArea.classList.add('hidden');
+        pairArea.classList.remove('hidden');
+        pairArea.classList.add('flex');
+        
+        (document.getElementById('pubKeyOutput') as HTMLTextAreaElement).value = data.public_key;
+        (document.getElementById('privKeyOutput') as HTMLTextAreaElement).value = data.private_key;
+      } else {
+        pairArea.classList.add('hidden');
+        pairArea.classList.remove('flex');
+        singleArea.classList.remove('hidden');
+        singleArea.classList.add('flex');
+        
+        keyGenOutput.value = data.key;
+      }
+
       document.getElementById('keyGenResultWrapper').classList.add('is-open');
       keyGenResultArea.classList.remove('opacity-0');
       keyGenResultArea.classList.add('opacity-100');
@@ -873,6 +919,34 @@
 
   useGenKeyBtn.addEventListener('click', () => {
     secretKey.value = keyGenOutput.value;
+    if (sourceText.value.trim()) processData();
+  });
+
+  
+  const copyPubKeyBtn = document.getElementById('copyPubKeyBtn') as HTMLButtonElement;
+  const copyPrivKeyBtn = document.getElementById('copyPrivKeyBtn') as HTMLButtonElement;
+  const usePrivKeyBtn = document.getElementById('usePrivKeyBtn') as HTMLButtonElement;
+  const pubKeyOutput = document.getElementById('pubKeyOutput') as HTMLTextAreaElement;
+  const privKeyOutput = document.getElementById('privKeyOutput') as HTMLTextAreaElement;
+
+  copyPubKeyBtn?.addEventListener('click', () => {
+    pubKeyOutput.select();
+    navigator.clipboard.writeText(pubKeyOutput.value);
+    const orig = copyPubKeyBtn.textContent;
+    copyPubKeyBtn.textContent = '[COPIED]';
+    setTimeout(() => { copyPubKeyBtn.textContent = orig; }, 2000);
+  });
+
+  copyPrivKeyBtn?.addEventListener('click', () => {
+    privKeyOutput.select();
+    navigator.clipboard.writeText(privKeyOutput.value);
+    const orig = copyPrivKeyBtn.textContent;
+    copyPrivKeyBtn.textContent = '[COPIED]';
+    setTimeout(() => { copyPrivKeyBtn.textContent = orig; }, 2000);
+  });
+
+  usePrivKeyBtn?.addEventListener('click', () => {
+    secretKey.value = privKeyOutput.value;
     if (sourceText.value.trim()) processData();
   });
 

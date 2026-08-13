@@ -24,7 +24,7 @@ class TextInput(BaseModel):
     advanced: Optional[AdvancedOptions] = None
 
 class KeyGenRequest(BaseModel):
-    algorithm: Literal["aes-128", "aes-192", "aes-256", "3des", "xor", "password"]
+    algorithm: str
     format: Literal["base64", "hex"] = "base64"
     length: int = Field(default=32, ge=8, le=512)  # bytes for XOR, chars for password
     include_symbols: bool = False

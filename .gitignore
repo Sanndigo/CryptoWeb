@@ -26,5 +26,5 @@ venv/
 __pycache__/
 /examples/
 /scratch/
-src/api/__pycache__/
-src/api/services/__pycache__/
+src/api/__pycache__
+src/api/services/__pycache__
