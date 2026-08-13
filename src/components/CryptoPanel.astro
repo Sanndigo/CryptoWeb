@@ -300,31 +300,23 @@
     </div>
 
     <!-- Secure Share Inline -->
-    <div class="bg-[#141416]/60 backdrop-blur-[20px] p-5 relative flex flex-col gap-4 border border-outline-variant rounded-sm panel-border group hover:border-primary/50 transition-colors">
+    <div class="bg-[#141416]/60 backdrop-blur-[20px] p-5 relative flex flex-col gap-4 border border-outline-variant rounded-sm panel-border group hover:border-primary/50 transition-colors justify-between">
       <div class="corner-tl corner-accent group-hover:border-primary"></div>
       <div class="corner-tr corner-accent group-hover:border-primary"></div>
       <div class="corner-bl corner-accent group-hover:border-primary"></div>
       <div class="corner-br corner-accent group-hover:border-primary"></div>
       
-      <div class="flex items-center gap-2 mb-2">
-        <span class="material-symbols-outlined text-primary">add_link</span>
-        <h3 class="font-headline-md text-headline-md text-primary">SECURE SHARE</h3>
+      <div class="flex items-center gap-2 mb-1">
+        <span class="material-symbols-outlined text-primary">key_visualizer</span>
+        <h3 class="font-headline-md text-headline-md text-primary">SHARE KEY OR KEY PAIR</h3>
       </div>
       
       <p class="font-code-block text-[11px] text-on-surface-variant leading-relaxed">
-        Generate a one-time burnable link containing your processed output. Expires in 24 hours.
+        Generate a one-time self-destructing link for your Secret Key or RSA/ECC Key Pair. Destroyed immediately after view or in 24 hours.
       </p>
 
-      <label class="flex items-center gap-3 cursor-pointer group/chk">
-        <div class="relative flex items-center justify-center">
-          <input type="checkbox" id="shareIncludeKey" class="peer appearance-none w-4 h-4 border border-outline-variant bg-black/40 checked:border-primary-fixed-dim checked:bg-primary/20 rounded-sm cursor-pointer transition-colors" />
-          <span class="material-symbols-outlined text-[12px] text-primary-fixed-dim absolute opacity-0 peer-checked:opacity-100 pointer-events-none">check</span>
-        </div>
-        <span class="font-code-block text-[11px] text-on-surface group-hover/chk:text-primary transition-colors">Include Secret Key</span>
-      </label>
-
-      <button id="createLinkBtn" class="btn-tech w-full py-2 font-label-caps text-[11px] rounded-sm flex items-center justify-center gap-1 border-primary text-primary hover:bg-primary hover:text-background transition-colors">
-        <span class="material-symbols-outlined text-[14px]">share</span> GENERATE SECURE LINK
+      <button id="createLinkBtn" class="btn-tech w-full py-2 font-label-caps text-[11px] rounded-sm flex items-center justify-center gap-1 border-primary text-primary hover:bg-primary hover:text-background transition-colors mt-auto">
+        <span class="material-symbols-outlined text-[14px]">share</span> GENERATE BURNABLE LINK
       </button>
 
       <div id="shareResultWrapper" class="expand-wrapper mt-1">
@@ -478,7 +470,6 @@
 
   // Share Vars
   const createLinkBtn    = document.getElementById('createLinkBtn') as HTMLButtonElement;
-  const shareIncludeKey  = document.getElementById('shareIncludeKey') as HTMLInputElement;
   const shareResultArea  = document.getElementById('shareResultArea') as HTMLDivElement;
   const shareUrl         = document.getElementById('shareUrl') as HTMLInputElement;
   const copyShareBtn     = document.getElementById('copyShareBtn') as HTMLButtonElement;
