@@ -749,37 +749,47 @@
 
 
   createLinkBtn.addEventListener('click', async () => {
-    if (!lastData?.result) {
-      alert('Process data first to share results.');
+    const pubKey = (document.getElementById('pubKeyOutput') as HTMLTextAreaElement)?.value;
+    const privKey = (document.getElementById('privKeyOutput') as HTMLTextAreaElement)?.value;
+    const singleGenKey = (document.getElementById('keyGenOutput') as HTMLInputElement)?.value;
+    const currentSecretKey = secretKey.value.trim();
+
+    let secretToShare = '';
+
+    if (pubKey && privKey && !document.getElementById('keyPairArea')?.classList.contains('hidden')) {
+      secretToShare = `--- PUBLIC KEY ---\n${pubKey}\n\n--- PRIVATE KEY ---\n${privKey}`;
+    } else if (currentSecretKey) {
+      secretToShare = currentSecretKey;
+    } else if (singleGenKey && !document.getElementById('singleKeyArea')?.classList.contains('hidden')) {
+      secretToShare = singleGenKey;
+    }
+
+    if (!secretToShare) {
+      alert('Please enter a Secret Key or generate a Key/Keypair first to share.');
       return;
     }
+
     createLinkBtn.innerHTML = '<span class="material-symbols-outlined text-[14px] animate-spin">refresh</span> GENERATING...';
     createLinkBtn.disabled = true;
 
     try {
-      const payload = {
-        data: lastData.result,
-        secret_key: shareIncludeKey.checked ? secretKey.value : undefined,
-        method: activeMethod
-      };
-
       const res = await fetch('/api/share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ secret: secretToShare })
       });
       
       if (!res.ok) throw new Error('Failed to generate link');
       const data = await res.json();
       
-      shareUrl.value = `${window.location.origin}/share/${data.id}`;
-      document.getElementById('shareResultWrapper').classList.add('is-open');
+      shareUrl.value = `${window.location.origin}/share/${data.uuid}`;
+      document.getElementById('shareResultWrapper')?.classList.add('is-open');
       shareResultArea.classList.remove('opacity-0');
       shareResultArea.classList.add('opacity-100');
     } catch (e: any) {
       alert(e.message);
     } finally {
-      createLinkBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">share</span> GENERATE SECURE LINK';
+      createLinkBtn.innerHTML = '<span class="material-symbols-outlined text-[14px]">share</span> GENERATE BURNABLE LINK';
       createLinkBtn.disabled = false;
     }
   });
