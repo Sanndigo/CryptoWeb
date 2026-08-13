@@ -325,35 +325,7 @@
     
   </div>
 
-  <!-- ── Bottom Panel: Execution Log ────────────────────────────────────── -->
-  <div class="bg-[#141416]/60 backdrop-blur-[20px] rounded-sm border border-outline-variant panel-border overflow-hidden mt-2 flex flex-col transition-all duration-300 ease-in-out">
-    <div class="bg-surface-container-low px-4 py-2 border-b border-outline-variant flex justify-between items-center">
-      <div class="font-status-label text-status-label text-on-surface-variant flex items-center gap-2">
-        <span class="material-symbols-outlined text-[14px]">receipt_long</span>
-        EXECUTION_LOG
-      </div>
-      <div id="logTimer" class="font-status-label text-status-label text-primary-fixed-dim">
-        T_ELAPSED: 0ms
-      </div>
-    </div>
-    <div id="executionLog" class="p-4 font-code-block text-code-block text-sm flex flex-col gap-2 max-h-48 overflow-y-auto custom-scroll">
-      <div class="flex gap-4 opacity-70">
-        <span class="text-outline-variant w-24">00:00:00.000</span>
-        <span class="text-secondary-fixed">INFO</span>
-        <span class="text-on-surface">Initializing sequence handler...</span>
-      </div>
-      <div class="flex gap-4 opacity-70">
-        <span class="text-outline-variant w-24">00:00:00.005</span>
-        <span class="text-secondary-fixed">INFO</span>
-        <span class="text-on-surface">Awaiting payload injection...</span>
-      </div>
-    </div>
-    
-    <!-- Retro progress bar -->
-    <div class="h-1 flex w-full bg-surface-container-lowest mt-auto">
-      <div id="retroProgress" class="h-full bg-primary-fixed-dim w-0 transition-all duration-300 flex"></div>
-    </div>
-  </div>
+  
 
 </div>
 
@@ -457,9 +429,6 @@
   const advChevron       = document.getElementById('advChevron') as HTMLSpanElement;
   const aesAad           = document.getElementById('aesAad') as HTMLInputElement;
 
-  const executionLog     = document.getElementById('executionLog') as HTMLDivElement;
-  const logTimer         = document.getElementById('logTimer') as HTMLSpanElement;
-  const retroProgress    = document.getElementById('retroProgress') as HTMLDivElement;
 
   // Share Vars
   const createLinkBtn    = document.getElementById('createLinkBtn') as HTMLButtonElement;
@@ -471,7 +440,6 @@
   let debounceTimer: ReturnType<typeof setTimeout>;
   let currentController: AbortController | null = null;
   let lastData: any = null;
-  let startTime = 0;
 
   // Advanced Options State
   let advancedEnabled = false;
@@ -514,23 +482,7 @@
     }
   }
 
-  function formatTime(ms: number) {
-    const d = new Date(ms);
-    return d.toISOString().substring(11, 23);
-  }
 
-  function addLog(level: string, message: string, cssClass: string) {
-    const time = formatTime(Date.now() - startTime);
-    const logHtml = `
-      <div class="flex gap-4 opacity-90 animate-[fadeIn_0.2s_ease-in]">
-        <span class="text-outline-variant w-24">${time}</span>
-        <span class="${cssClass}">${level}</span>
-        <span class="text-on-surface">${message}</span>
-      </div>
-    `;
-    executionLog.insertAdjacentHTML('beforeend', logHtml);
-    executionLog.scrollTop = executionLog.scrollHeight;
-  }
 
   sourceText.addEventListener('input', () => {
     charCount.textContent = `${sourceText.value.length} / 1000`;
@@ -636,20 +588,13 @@
     const text = sourceText.value;
     const key = secretKey.value;
     
-    // Use globals for method
     const category = activeCategory;
     const method = activeMethod;
-
-    executionLog.innerHTML = '';
-    startTime = Date.now();
-    addLog('INFO', 'Initializing sequence handler...', 'text-secondary-fixed');
     
     if (!text.trim()) {
       resultsContainer.innerHTML = '<span class="opacity-50">AWAITING INPUT...</span>';
       apiStatus.textContent = 'READY';
       apiStatus.className = 'text-primary-fixed-dim';
-      retroProgress.style.width = '0%';
-      addLog('WARN', 'Input buffer is empty. Standby.', 'text-error');
       return;
     }
 
@@ -658,10 +603,7 @@
 
     apiStatus.textContent = 'PROCESSING...';
     apiStatus.className = 'text-secondary-fixed-dim animate-pulse';
-    retroProgress.style.width = '30%';
     outputFormatBadge.textContent = method;
-
-    addLog('EXEC', `Applying ${method} protocol...`, 'text-primary-fixed');
 
     try {
       const response = await fetch('/api/process', {
@@ -684,38 +626,43 @@
       });
 
       const data = await response.json();
-      retroProgress.style.width = '80%';
-      
       if (!response.ok) throw new Error(data.detail || 'API Error');
 
       lastData = data;
       renderResults();
       apiStatus.textContent = 'SUCCESS';
       apiStatus.className = 'text-primary-fixed-dim';
-      retroProgress.style.width = '100%';
-      
-      const elapsed = Date.now() - startTime;
-      logTimer.textContent = `T_ELAPSED: ${elapsed}ms`;
-      addLog('DONE', 'Process completed successfully.', 'text-primary');
 
     } catch (error: any) {
       if (error.name === 'AbortError') return;
       apiStatus.textContent = 'ERROR';
       apiStatus.className = 'text-error font-bold';
       resultsContainer.innerHTML = `<span class="text-error font-bold">[${error.message}]</span>`;
-      retroProgress.style.width = '0%';
-      addLog('ERR', error.message, 'text-error');
     }
   }
 
-  function renderResults() {
-    if (!lastData || !lastData.result) return;
-    
-    let formattedResult = lastData.result;
-    
-    if (typeof formattedResult === 'object') {
-       formattedResult = JSON.stringify(formattedResult, null, 2);
+  function getUnwrappedResult() {
+    if (!lastData) return null;
+    let val = lastData.result || lastData;
+    if (val.hashing) val = val.hashing;
+    if (val.encoding) val = val.encoding;
+    if (val.encryption) val = val.encryption;
+    if (val.formatting) val = val.formatting;
+
+    if (typeof val === 'object' && val !== null) {
+      const keys = Object.keys(val);
+      if (keys.length === 1 && typeof val[keys[0]] === 'string') {
+        val = val[keys[0]];
+      }
     }
+    return val;
+  }
+
+  function renderResults() {
+    const val = getUnwrappedResult();
+    if (val === null) return;
+    
+    let formattedResult = typeof val === 'string' ? val : JSON.stringify(val, null, 2);
     
     formattedResult = formattedResult
       .replace(/&/g, '&amp;')
@@ -727,8 +674,9 @@
   }
 
   copyOutBtn.addEventListener('click', () => {
-    if (!lastData?.result) return;
-    const textToCopy = typeof lastData.result === 'string' ? lastData.result : JSON.stringify(lastData.result, null, 2);
+    const val = getUnwrappedResult();
+    if (!val) return;
+    const textToCopy = typeof val === 'string' ? val : JSON.stringify(val, null, 2);
     
     navigator.clipboard.writeText(textToCopy)
       .then(() => {
