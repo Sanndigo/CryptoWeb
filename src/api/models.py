@@ -38,3 +38,9 @@ class ShareResponse(BaseModel):
 
 class ShareGet(BaseModel):
     secret: str
+
+class FeedbackRequest(BaseModel):
+    name: str
+    email: str
+    message: str
+    website: Optional[str] = None  # honeypot field

@@ -8,10 +8,12 @@ from fastapi import Depends
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from .models import TextInput, AdvancedOptions, KeyGenRequest, ShareCreate, ShareResponse, ShareGet
+from .models import TextInput, AdvancedOptions, KeyGenRequest, ShareCreate, ShareResponse, ShareGet, FeedbackRequest
 from .services import hashing, encoding, encryption, formatting, keygen
 from .services.db import redis_client
 from contextlib import asynccontextmanager
+from aiogram import Bot
+from aiogram.enums import ParseMode
 import uuid
 import datetime
 import traceback
@@ -30,6 +32,10 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S"
 )
 logger = logging.getLogger("cryptoweb")
+
+TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN")
+TG_CHAT_ID = os.getenv("TG_CHAT_ID")
+tg_bot = Bot(token=TG_BOT_TOKEN) if TG_BOT_TOKEN else None
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 # When running behind a reverse proxy (nginx), set TRUST_PROXY=1 so that
@@ -206,6 +212,36 @@ async def get_share(request: Request, share_id: UUID):
         
     logger.info(f"Share link accessed and burned: {share_id_str} by {_get_client_ip(request)}")
     return ShareGet(secret=secret)
+
+
+# ── Feedback endpoint ─────────────────────────────────────────────────────────
+
+@app.post("/api/feedback")
+@limiter.limit("5/minute")
+async def submit_feedback(request: Request, payload: FeedbackRequest):
+    if payload.website:
+        logger.warning(f"Bot detected in feedback from {_get_client_ip(request)}. Honeypot filled.")
+        return {"status": "success", "message": "Thank you for your feedback!"}
+    
+    if not tg_bot or not TG_CHAT_ID:
+        logger.error("Telegram bot is not configured. (TG_BOT_TOKEN or TG_CHAT_ID missing)")
+        raise HTTPException(status_code=500, detail="Feedback system is currently unavailable.")
+    
+    text = (
+        f"📩 <b>New Feedback (CryptoWeb)</b>\n\n"
+        f"<b>Name:</b> {payload.name}\n"
+        f"<b>Email:</b> {payload.email}\n"
+        f"<b>IP:</b> {_get_client_ip(request)}\n\n"
+        f"<b>Message:</b>\n{payload.message}"
+    )
+    
+    try:
+        await tg_bot.send_message(chat_id=TG_CHAT_ID, text=text, parse_mode=ParseMode.HTML)
+    except Exception as e:
+        logger.error(f"Failed to send telegram message: {e}")
+        raise HTTPException(status_code=500, detail="Failed to send feedback.")
+        
+    return {"status": "success", "message": "Thank you for your feedback!"}
 
 
 # ── HTML page endpoints ───────────────────────────────────────────────────────

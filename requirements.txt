@@ -1,6 +1,6 @@
-fastapi==0.138.0
-uvicorn==0.49.0
-cryptography==49.0.0
+fastapi==0.141.1
+uvicorn==0.52.2
+cryptography==50.0.0
 bcrypt==5.0.0
 PyJWT==2.13.0
 pydantic==2.13.4
@@ -10,3 +10,4 @@ sqlalchemy
 asyncpg
 greenlet
 python-dotenv
+aiogram==3.30.0

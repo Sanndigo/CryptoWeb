@@ -297,7 +297,12 @@
     </div>
     <div id="shareResult" class="hidden mt-4 p-3 bg-neon-green/10 border border-neon-green break-all">
       <p class="text-xs text-neon-green font-bold mb-2">Link Generated (Copy it now):</p>
-      <a id="shareLinkAnchor" href="#" target="_blank" class="text-pure-white text-xs underline hover:text-neon-green"></a>
+      <div class="flex items-center gap-2">
+        <a id="shareLinkAnchor" href="#" target="_blank" class="flex-1 text-pure-white text-xs underline hover:text-neon-green truncate"></a>
+        <button id="copyShareLinkBtn" class="shrink-0 bg-neon-green/20 border border-neon-green text-neon-green text-[10px] font-bold px-3 py-1.5 tracking-wider hover:bg-neon-green hover:text-black-bg transition-all active:scale-95">
+          COPY LINK
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -819,6 +824,7 @@
   const confirmShareBtn   = document.getElementById('confirmShareBtn');
   const shareResult       = document.getElementById('shareResult');
   const shareLinkAnchor   = document.getElementById('shareLinkAnchor') as HTMLAnchorElement;
+  const copyShareLinkBtn  = document.getElementById('copyShareLinkBtn') as HTMLButtonElement;
 
   infoShareBtn?.addEventListener('click', () => infoModal?.classList.remove('hidden'));
   closeInfoBtn?.addEventListener('click', () => infoModal?.classList.add('hidden'));
@@ -855,6 +861,23 @@
       confirmShareBtn.textContent = 'LINK GENERATED';
     } catch (e) {
       confirmShareBtn.textContent = 'FAILED';
+    }
+  });
+
+  copyShareLinkBtn?.addEventListener('click', async () => {
+    if (shareLinkAnchor?.href && shareLinkAnchor.href !== '#') {
+      try {
+        await navigator.clipboard.writeText(shareLinkAnchor.href);
+        const origText = copyShareLinkBtn.textContent;
+        copyShareLinkBtn.textContent = 'COPIED!';
+        copyShareLinkBtn.classList.add('bg-neon-green', 'text-black-bg');
+        setTimeout(() => {
+          copyShareLinkBtn.textContent = origText;
+          copyShareLinkBtn.classList.remove('bg-neon-green', 'text-black-bg');
+        }, 1500);
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
     }
   });
 

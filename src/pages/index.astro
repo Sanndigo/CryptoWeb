@@ -1,16 +1,188 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import CryptoPanel from '../components/CryptoPanel.astro';
 ---
 
-<Layout title="webcrypt60 | Advanced Cryptography Suite">
-  <div class="mb-8 border-l-4 border-neon-green pl-4">
-    <h2 class="text-3xl font-bold uppercase tracking-widest text-pure-white mb-2">Universal Terminal</h2>
-    <p class="text-light-gray font-mono text-sm max-w-2xl">
-      Enter your payload to simultaneously encode, decode, hash, and encrypt across multiple algorithms. 
-      All processing is executed rapidly. Enter an optional secret key for symmetric encryption protocols.
-    </p>
-  </div>
+<Layout 
+  title="CryptoWeb - Secure Data Processing, Encryption, and Key Sharing"
+  description="CryptoWeb by WebTech60 is a robust online toolkit for developers. Perform MD5, SHA-256 hashing, AES-256 and 3DES encryption, Base64/Hex encoding, and secure one-time key sharing instantly in your browser."
+>
+  <main class="min-h-screen bg-black-bg text-pure-white font-sans flex flex-col relative">
+    
+    <!-- Background Accents -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-green/0 via-neon-green to-neon-green/0 opacity-50"></div>
+    
+    <!-- Navbar -->
+    <nav class="w-full border-b border-dark-gray p-4 flex justify-between items-center bg-black-bg/90 sticky top-0 z-50">
+      <div class="flex items-center gap-3">
+        <div class="w-2 h-2 bg-neon-green rounded-full shadow-[0_0_10px_#39ff14] animate-pulse"></div>
+        <span class="font-bold tracking-widest text-sm">CRYPTOWEB</span>
+      </div>
+      <a href="/app" class="border border-neon-green text-neon-green text-xs font-bold px-6 py-2 tracking-widest hover:bg-neon-green/10 transition-all active:scale-95">LAUNCH APP</a>
+    </nav>
 
-  <CryptoPanel />
+    <div class="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-8 flex flex-col gap-16 pb-20 mt-8 sm:mt-16">
+      
+      <!-- Hero Section -->
+      <section class="flex flex-col items-center text-center gap-6">
+        <h1 class="text-4xl sm:text-6xl font-bold tracking-widest text-pure-white leading-tight">
+          SECURE <span class="text-neon-green">ENCRYPTION</span> PROTOCOLS
+        </h1>
+        <p class="text-light-gray max-w-2xl font-mono text-sm leading-relaxed">
+          CryptoWeb is an advanced toolkit for developers and privacy enthusiasts. Instantly hash, encrypt, encode, and securely share your sensitive data using one-time burnable links. Zero logs. Zero compromise.
+        </p>
+        <div class="flex gap-4 mt-4">
+          <a href="/app" class="bg-neon-green/10 border border-neon-green text-neon-green font-bold text-sm px-8 py-4 tracking-widest hover:bg-neon-green hover:text-black-bg transition-all active:scale-95 shadow-[0_0_15px_rgba(57,255,20,0.2)]">
+            OPEN TERMINAL
+          </a>
+        </div>
+      </section>
+
+      <!-- SEO & Technologies Section -->
+      <section class="mt-8 border-l-4 border-neon-green bg-neon-green/5 p-8 relative">
+        <h2 class="text-xl font-bold tracking-widest mb-6">SUPPORTED TECHNOLOGIES & PROTOCOLS</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          
+          <div class="flex flex-col gap-2">
+            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">HASHING</h3>
+            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
+              <li>MD5 (Message-Digest Algorithm)</li>
+              <li>SHA-256 (Secure Hash Algorithm 2)</li>
+              <li>SHA-512 (High-security hashing)</li>
+              <li>bcrypt (Adaptive password hashing)</li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">ENCRYPTION</h3>
+            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
+              <li>AES-256 (Advanced Encryption Standard)</li>
+              <li>3DES (Triple Data Encryption)</li>
+              <li>XOR Cipher (Stream ciphering)</li>
+              <li>ROT13 (Caesar substitution)</li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">ENCODING</h3>
+            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
+              <li>Base64 Encoding / Decoding</li>
+              <li>URL (Percent-encoding)</li>
+              <li>Hexadecimal (Base16)</li>
+              <li>Binary & Morse Code</li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <h3 class="text-neon-green font-bold text-sm tracking-widest border-b border-neon-green/30 pb-2">SECURE UTILITIES</h3>
+            <ul class="text-xs font-mono text-light-gray space-y-2 mt-2 list-disc pl-4">
+              <li>Burnable One-Time Link Sharing</li>
+              <li>Secure Password Generator</li>
+              <li>JSON Formatter & Minifier</li>
+              <li>JWT (JSON Web Token) Decoder</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- WebTech60 Section -->
+      <section class="border border-dark-gray bg-white/5 p-8 relative overflow-hidden mt-8">
+        <div class="absolute -right-20 -top-20 w-64 h-64 bg-yellow-400/10 blur-3xl rounded-full pointer-events-none"></div>
+        <h2 class="text-2xl font-bold tracking-widest mb-4 flex items-center gap-3 relative z-10">
+          <span class="text-yellow-400">⚡</span> ABOUT WEBTECH60
+        </h2>
+        <p class="text-light-gray font-mono text-sm leading-relaxed mb-8 relative z-10 max-w-3xl">
+          CryptoWeb is proudly developed and maintained by <strong class="text-pure-white">WebTech60 Studio</strong>. We specialize in building high-performance, secure, and modern web applications tailored to your business needs. From complex backend architectures to stunning frontend interfaces, we deliver excellence without compromise.
+        </p>
+        <a href="https://webtech60.ru" target="_blank" class="relative z-10 inline-block border border-yellow-400 text-yellow-400 text-xs font-bold px-6 py-3 tracking-widest hover:bg-yellow-400/10 transition-all active:scale-95">
+          VISIT WEBTECH60.RU
+        </a>
+      </section>
+
+      <!-- Feedback Form -->
+      <section class="border border-dark-gray bg-black-bg p-8 relative shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+        <h2 class="text-xl font-bold tracking-widest mb-2">FEEDBACK & SUPPORT</h2>
+        <p class="text-xs text-light-gray font-mono mb-8">Found a bug or want to order a project? Send us a direct message right to our Telegram.</p>
+
+        <form id="feedbackForm" class="flex flex-col gap-5 max-w-lg">
+          <!-- Honeypot field (hidden from real users, bots will fill it) -->
+          <div class="opacity-0 absolute -left-[9999px] top-0 pointer-events-none" aria-hidden="true">
+            <label for="website">Website (Leave blank)</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="fbName" class="text-[10px] text-neon-green tracking-widest font-bold">NAME</label>
+            <input type="text" id="fbName" required class="bg-black-bg border border-dark-gray p-3 text-sm text-pure-white font-mono focus:outline-none focus:border-neon-green transition-colors" />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="fbEmail" class="text-[10px] text-neon-green tracking-widest font-bold">EMAIL</label>
+            <input type="email" id="fbEmail" required class="bg-black-bg border border-dark-gray p-3 text-sm text-pure-white font-mono focus:outline-none focus:border-neon-green transition-colors" />
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label for="fbMessage" class="text-[10px] text-neon-green tracking-widest font-bold">MESSAGE</label>
+            <textarea id="fbMessage" required rows="5" class="bg-black-bg border border-dark-gray p-3 text-sm text-pure-white font-mono focus:outline-none focus:border-neon-green transition-colors custom-scroll resize-none"></textarea>
+          </div>
+
+          <button type="submit" id="fbSubmit" class="mt-2 bg-neon-green/20 border border-neon-green text-neon-green font-bold text-xs py-3 tracking-widest hover:bg-neon-green hover:text-black-bg transition-all active:scale-95">
+            SEND MESSAGE
+          </button>
+          
+          <div id="fbStatus" class="text-xs font-mono hidden mt-2"></div>
+        </form>
+      </section>
+
+    </div>
+  </main>
 </Layout>
+
+<script>
+  const form = document.getElementById('feedbackForm') as HTMLFormElement;
+  const submitBtn = document.getElementById('fbSubmit') as HTMLButtonElement;
+  const statusDiv = document.getElementById('fbStatus') as HTMLDivElement;
+  
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = (document.getElementById('fbName') as HTMLInputElement).value;
+    const email = (document.getElementById('fbEmail') as HTMLInputElement).value;
+    const message = (document.getElementById('fbMessage') as HTMLTextAreaElement).value;
+    const website = (document.getElementById('website') as HTMLInputElement).value; // honeypot
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SENDING...';
+    statusDiv.className = 'text-xs font-mono hidden mt-2';
+    
+    try {
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message, website })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.detail || 'Failed to send message');
+      }
+      
+      form.reset();
+      statusDiv.textContent = data.message || 'Message sent successfully!';
+      statusDiv.className = 'text-xs font-mono text-neon-green mt-2';
+    } catch (err: any) {
+      statusDiv.textContent = err.message;
+      statusDiv.className = 'text-xs font-mono text-red-500 mt-2';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'SEND MESSAGE';
+    }
+  });
+</script>
+
+<style>
+  .custom-scroll::-webkit-scrollbar       { width: 6px; }
+  .custom-scroll::-webkit-scrollbar-track { background: var(--color-black-bg); }
+  .custom-scroll::-webkit-scrollbar-thumb { background: var(--color-dark-gray); }
+  .custom-scroll:hover::-webkit-scrollbar-thumb { background: var(--color-neon-green); }
+</style>

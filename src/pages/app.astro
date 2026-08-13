@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import CryptoPanel from '../components/CryptoPanel.astro';
+---
+
+<Layout title="webcrypt60 | Advanced Cryptography Suite">
+  <div class="mb-8 border-l-4 border-neon-green pl-4">
+    <h2 class="text-3xl font-bold uppercase tracking-widest text-pure-white mb-2">Universal Terminal</h2>
+    <p class="text-light-gray font-mono text-sm max-w-2xl">
+      Enter your payload to simultaneously encode, decode, hash, and encrypt across multiple algorithms. 
+      All processing is executed rapidly. Enter an optional secret key for symmetric encryption protocols.
+    </p>
+  </div>
+
+  <CryptoPanel />
+</Layout>
